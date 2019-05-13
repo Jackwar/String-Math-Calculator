@@ -1,0 +1,18 @@
+﻿@page "/"
+@using Calculations
+
+<div style="width: 100%" class="m-5">
+    <textarea class="calculator-textarea" bind="@calculatorInput" />
+    <button onclick="@RunCalculation">Test</button>
+</div>
+
+@functions{
+    string calculatorInput;
+    Calculator calculator = new Calculator();
+
+    void RunCalculation()
+    {
+        double product = calculator.Calculation(calculatorInput);
+        calculatorInput = product.ToString();
+    }
+}
