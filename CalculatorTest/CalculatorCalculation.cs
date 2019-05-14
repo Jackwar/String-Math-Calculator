@@ -11,7 +11,6 @@ namespace Calculations
         public CalculatorItem Left { get; set; }
         public CalculatorItem Right { get; set; }
         public CalculatorItem Top { get; set; }
-        //public delegate double Calculation(double x, double y);
         public CalculationPair PairCalc { get; set; }
         public CalculationSingle SingleCalc { get; set; }
         public int Weight { get; set; }

@@ -12,8 +12,13 @@ namespace Calculations
 
     public class Calculator
     {
-        private Regex regex = new Regex(@"[+-\\*/]", RegexOptions.Compiled);
+        private Regex regex = new Regex(@"[+-\\*/^]", RegexOptions.Compiled);
         //private delegate double calculationDelegate(double x, double y);
+
+        private double Exponent(double x, double y)
+        {
+            return Math.Pow(x, y);
+        }
 
         private double Times(double x, double y)
         {
@@ -40,10 +45,10 @@ namespace Calculations
             return Math.Sqrt(x);
         }
 
-        //private void setCalculation(C)
-
-        //The main method for calculations, will throw a FormatException
-        //if the string provided by the user has illegal characters, or too many .'s in a number
+        //The main method for calculations
+        //Reads the calculation string from right to left and parses the characters to doubles and operations 
+        //if the string provided has illegal characters, or too many .'s in a number throw a FormatException
+        //
         public double Calculation(string calculations)
         {
 
@@ -86,9 +91,8 @@ namespace Calculations
                         //If we are, add a SingleNum to the operation order with the number
                         if(i == 0)
                         {
-                            var numberBuilder = new StringBuilder();
-                            numberBuilder.Append(numberChar.ToArray());
-                            operationOrder.Enqueue(new SingleNum(double.Parse(numberBuilder.ToString())));
+                            string numberString = new string(numberChar.ToArray());
+                            operationOrder.Enqueue(new OperationNum(double.Parse(numberString)));
                         }
                     }
                     else
@@ -97,13 +101,33 @@ namespace Calculations
                         //Reset the check for more than one . in a number
                         firstDot = true;
                         double currentNumber = 0;
-                        //If there is a number in numberChar, then save
-                        //the number
+
+                        //If there is a number in numberChar, then save the number
                         if (numberChar.Count > 0)
                         {
-                            var numberBuilder = new StringBuilder();
-                            numberBuilder.Append(numberChar.ToArray());
-                            currentNumber = double.Parse(numberBuilder.ToString());
+                            //Check if the number is negative
+                            if(character.Equals('-'))
+                            {
+                                //Check if we are at the end of the string
+                                //If we are not, check for a new operation after the '-' character
+                                if(i > 0)
+                                {
+                                    char nextCharacter = calcNoSpaces[i - 1];
+                                    isNum = int.TryParse(nextCharacter.ToString(), out _);
+
+                                    if(!isNum)
+                                    {
+                                        numberChar.Push(character);
+                                        character = calcNoSpaces[--i];
+                                    }
+                                }
+                                else
+                                {
+                                    numberChar.Push(character);
+                                }
+                            }
+                            string numberString = new string(numberChar.ToArray());
+                            currentNumber = double.Parse(numberString);
                             numberChar.Clear();
                         }
 
@@ -130,41 +154,56 @@ namespace Calculations
             return OrderCalculations(operationOrder);
         }
 
+        //Reorder the operations in the opeartionsOrder Queue by weight of operation
         private double OrderCalculations(Queue<Operation> operationOrder)
         {
+            //The originCalculator is the top of the binary tree structure for the operations order
             var originCalculator = new CalculatorCalculation();
+            //The current calculation, start with the origin
             var currentCalculator = originCalculator;
-            //CalculatorCalculation topCalculator = null;
 
+            //Loop through all the opearations and order them according to the order of operations
             foreach(Operation operation in operationOrder)
             {
+                //Put the number associated with the operation to the right of the tree as a single number
                 var rightCalculator = new CalculatorNumber(operation.X);
                 currentCalculator.Right = rightCalculator;
                 
+                //Check if the Operation is a OperationPair
                 if(operation is OperationPair)
                 {
                     OperationPair operationPair = (OperationPair)operation;
                     currentCalculator.PairCalc = operationPair.CalcPair;
                     currentCalculator.Weight = operationPair.Weight;
                 }
-                else if (operation is SingleNum)
+                else if (operation is OperationNum)
                 {
+                    //If the Operation is an OperationNum, don't assign a calculation
+                    //and make the weight -1 so its operation order is never checked
                     currentCalculator.Weight = -1;
                 }
 
+                //The CalculatorCalculation above the current CalculationCalculator in the binary tree
                 var topCalculator = (CalculatorCalculation)currentCalculator.Top;
 
+                //Check if we are on the originCalculator
                 if(topCalculator != null)
                 {
+                    //Don't change operations order if the currentCalculator is a OperationNum
                     if(topCalculator.Weight != -1 && currentCalculator.Weight != -1)
                     {
+                        //If the currentCalculators weight is less than it's top weight, sink the top to its right
                         if(currentCalculator.Weight < topCalculator.Weight)
                         {
                             var tempCurrentCalculator = currentCalculator;
                             var tempTopCalculator = topCalculator;
 
+                            //Loop until the weights have been reordered
                             while (tempCurrentCalculator.Weight < tempTopCalculator.Weight)
                             {
+                                //Create a newTopCalculator to replace the current Top calculator
+                                //The current Top calculator will sink to the new Top calculators right
+                                //and the new Top calculators operation will become the operation of the current calculator
                                 var newTopCalculator = new CalculatorCalculation()
                                 {
                                     PairCalc = tempCurrentCalculator.PairCalc,
@@ -174,11 +213,14 @@ namespace Calculations
 
                                 tempTopCalculator.Left = tempCurrentCalculator.Right;
                                 tempTopCalculator.Top = newTopCalculator;
+                                //If the current Top calculator was the origin, make the new Top calculator the new origin
                                 if (originCalculator == tempTopCalculator)
                                 {
                                     originCalculator = newTopCalculator;
                                 }
 
+                                //Make the current calculator the newTopCalculator to check if the new Top calculator
+                                //has a weight less than the new Top calculators Top.
                                 tempCurrentCalculator = newTopCalculator;
                                 tempTopCalculator = (CalculatorCalculation)tempCurrentCalculator.Top;
 
@@ -186,6 +228,7 @@ namespace Calculations
                                 {
                                     tempTopCalculator.Left = newTopCalculator;
                                 }
+                                //If there is no Top calculator break the loop
                                 else
                                 {
                                     break;
@@ -196,33 +239,31 @@ namespace Calculations
                         }
                         else
                         {
+                            //If the weights were already ordered, add the currentCalculator to the left of the Top
                             topCalculator.Left = currentCalculator;
-                            //topCalculator = currentCalculator;
                         }
                     }
                     else
                     {
+                        //If the current calculator is a OperationNum, add the currentCalculator to the left of the Top
                         topCalculator.Left = currentCalculator;
-                        //topCalculator = currentCalculator;
                     }
                 }
-                /*else
-                {
-                    topCalculator.Left = currentCalculator;
-                    topCalculator = currentCalculator;
-                }*/
 
+                //Setup the currentCalculator as the new Top for the next CalculationCalculator in the loop
                 var tempCalculator = currentCalculator;
                 currentCalculator = new CalculatorCalculation();
                 currentCalculator.Top = tempCalculator;
 
             }
 
+            //Run the operations
             return originCalculator.Calculate();
         }
 
 
-
+        //Return the opeartion Delegate and the weight for the character operation
+        //If the character isn't listed throw a FormatException
         private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
         {
             switch(operation)
@@ -235,8 +276,10 @@ namespace Calculations
                     return (Divide, 1);
                 case '*':
                     return (Times, 1);
+                case '^':
+                    return (Exponent, 2);
                 default:
-                    return (Add, 1);
+                    throw new FormatException();
             }
         }
     }

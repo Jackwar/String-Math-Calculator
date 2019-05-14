@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Calculations
 {
-    class SingleNum : Operation
+    class OperationNum : Operation
     {
-        public SingleNum(double x) :
+        public OperationNum(double x) :
             base(x){}
     }
 }
