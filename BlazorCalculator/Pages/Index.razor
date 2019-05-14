@@ -1,18 +1,88 @@
 ﻿@page "/"
 @using Calculations
+@inject IJSRuntime JSRuntime
 
-<div style="width: 100%" class="m-5">
-    <textarea class="calculator-textarea" bind="@calculatorInput" />
-    <button onclick="@RunCalculation">Test</button>
+<div class="p-5 calculator-text-div">
+    <textarea id="calculator-textbox" class="calculator-textarea align-middle" bind="@calculatorInput" autofocus />
 </div>
-
+<div class="d-flex justify-content-center">
+    <table class="calculator-table">
+        <tr></tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                <button class="calulator-button" onclick="insertText('/')">/</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="calulator-button" onclick="insertText('7')">7</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('8')">8</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('9')">9</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('*')">*</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="calulator-button" onclick="insertText('4')">4</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('5')">5</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('6')">6</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('-')">-</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="calulator-button" onclick="insertText('1')">1</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('2')">2</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('3')">3</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('+')">+</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="calulator-button" onclick="insertText(' ')"></button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('0')">0</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('.')">.</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="@RunCalculation">=</button>
+            </td>
+        </tr>
+    </table>
+</div>
 @functions{
     string calculatorInput;
     Calculator calculator = new Calculator();
 
-    void RunCalculation()
+    async void RunCalculation()
     {
         double product = calculator.Calculation(calculatorInput);
         calculatorInput = product.ToString();
+
+        await JSRuntime.InvokeAsync<object>("reFocusText", "");
     }
 }
