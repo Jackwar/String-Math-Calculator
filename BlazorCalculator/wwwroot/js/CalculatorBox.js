@@ -1,35 +1,47 @@
-﻿var cursorPos = 0;
-
-var replaceText = false;
-
-function insertText(text) {
-    var textBox = document.getElementById("calculator-textbox");
-
-    if (!replaceText) {
-        var cursorPos = textBox.selectionStart;
-        var innerText = textBox.value;
-        var textBefore = innerText.substring(0, cursorPos);
-        var textAfter = innerText.substring(cursorPos, innerText.length);
-
-        var event = new Event('change');
-
-        textBox.value = textBefore + text + textAfter;
-        textBox.dispatchEvent(event);
-        textBox.focus();
-        //textBox.selectionStart = cursorPos;
-        textBox.setSelectionRange(cursorPos + 1, cursorPos + 1);
+﻿function activateTextArea() {
+   
+    if (window.matchMedia("(min-width: 576px)").matches) {
+        var input = document.getElementById("calculator-textbox");
+        input.readOnly = false;
     }
     else {
-        textBox.value = text;
-        textBox.focus();
-        textBox.setSelectionRange(1, 1);
-        replaceText = false;
+        var calculatorDiv = document.getElementById("calculator-div");
+        calculatorDiv.classList.add("sticky-top");
     }
+}
 
+function insertText(text) {
+    var input = document.getElementById("calculator-textbox");
+    var event = new Event('change');
+
+    var cursorPos = input.selectionStart;
+    var innerText = input.value;
+    var textBefore = innerText.substring(0, cursorPos);
+    var textAfter = innerText.substring(cursorPos, innerText.length);
+
+    input.value = textBefore + text + textAfter;
+    input.dispatchEvent(event);
+    input.focus();
+    input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+}
+
+function deleteText() {
+    var input = document.getElementById("calculator-textbox");
+    var cursorPos = input.selectionStart;
+
+    if (cursorPos != 0) {
+        var event = new Event('change');
+        var innerText = input.value;
+        var deletedText = innerText.slice(0, cursorPos - 1) + innerText.slice(cursorPos);
+
+        input.value = deletedText;
+        input.dispatchEvent(event);
+        input.focus();
+        input.setSelectionRange(cursorPos - 1, cursorPos - 1);
+    }
 }
 
 function reFocusText() {
-    var textBox = document.getElementById("calculator-textbox");
-
-    replaceText = true;
+    var input = document.getElementById("calculator-textbox");
+    input.focus();
 }

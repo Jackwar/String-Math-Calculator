@@ -2,16 +2,21 @@
 @using Calculations
 @inject IJSRuntime JSRuntime
 
-<div class="p-5 calculator-text-div">
-    <textarea id="calculator-textbox" class="calculator-textarea align-middle" bind="@calculatorInput" autofocus />
+<div id="calculator-div" class="pb-5 p-sm-5 p-md-5 p-lg-5 p-xl-5 calculator-text-div d-flex align-items-end">
+    <input type="text" id="calculator-textbox" readonly class="calculator-input align-middle" onblur="this.focus()" bind="@calculatorInput" autofocus />
 </div>
 <div class="d-flex justify-content-center">
     <table class="calculator-table">
-        <tr></tr>
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>
+                <button class="calulator-button" onclick="insertText('^')">yˣ</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('r')">ˣ√</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="deleteText()">⌫</button>
+            </td>
             <td>
                 <button class="calulator-button" onclick="insertText('/')">/</button>
             </td>
@@ -74,15 +79,21 @@
         </tr>
     </table>
 </div>
+
 @functions{
     string calculatorInput;
     Calculator calculator = new Calculator();
 
-    async void RunCalculation()
+    void RunCalculation()
     {
         double product = calculator.Calculation(calculatorInput);
         calculatorInput = product.ToString();
 
-        await JSRuntime.InvokeAsync<object>("reFocusText", "");
+        JSRuntime.InvokeAsync<object>("reFocusText", "");
+    }
+
+    protected override void OnAfterRender()
+    {
+        JSRuntime.InvokeAsync<object>("activateTextArea", "");
     }
 }

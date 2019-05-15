@@ -12,7 +12,7 @@ namespace Calculations
 
     public class Calculator
     {
-        private Regex regex = new Regex(@"[+-\\*/^]", RegexOptions.Compiled);
+        private Regex regex = new Regex(@"[+-\\*/^r]", RegexOptions.Compiled);
         //private delegate double calculationDelegate(double x, double y);
 
         private double Exponent(double x, double y)
@@ -40,9 +40,9 @@ namespace Calculations
             return x / y;
         }
 
-        private double SquareRoot(double x)
+        private double Root(double x, double y)
         {
-            return Math.Sqrt(x);
+            return Math.Pow(x, 1/y);
         }
 
         //The main method for calculations
@@ -278,6 +278,8 @@ namespace Calculations
                     return (Times, 1);
                 case '^':
                     return (Exponent, 2);
+                case 'r':
+                    return (Root, 2);
                 default:
                     throw new FormatException();
             }
