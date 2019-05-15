@@ -8,4 +8,4 @@ A test page is at https://blazorcalculator20190513040851.azurewebsites.net/
 At the moment this supports the +, -, / and * operators. Parentheses are not supported.
 
 The root of a number is also support with the syntax 'num r 2' for square root 'num r 3' for cubed root, 4th root, etc.
-Exponents are supported with the syntax num ^ power.
+Exponents are supported with the syntax 'num ^ power'.
