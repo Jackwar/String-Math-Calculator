@@ -1,4 +1,6 @@
-﻿function activateTextArea() {
+﻿var isMobile = false;
+
+function activateTextArea() {
    
     if (window.matchMedia("(min-width: 576px)").matches) {
         var input = document.getElementById("calculator-textbox");
@@ -7,15 +9,18 @@
     else {
         var calculatorDiv = document.getElementById("calculator-div");
         calculatorDiv.classList.add("sticky-top");
+        isMobile = true;
     }
 }
 
 function insertText(text) {
     var input = document.getElementById("calculator-textbox");
     var event = new Event('change');
-
-    var cursorPos = input.selectionStart;
     var innerText = input.value;
+    var cursorPos = innerText.length;
+    if (!isMobile) {
+        cursorPos = input.selectionStart;
+    }
     var textBefore = innerText.substring(0, cursorPos);
     var textAfter = innerText.substring(cursorPos, innerText.length);
 
@@ -27,7 +32,10 @@ function insertText(text) {
 
 function deleteText() {
     var input = document.getElementById("calculator-textbox");
-    var cursorPos = input.selectionStart;
+    var cursorPos = input.value.length;
+    if (!isMobile) {
+        cursorPos = input.selectionStart;
+    }
 
     if (cursorPos != 0) {
         var event = new Event('change');
