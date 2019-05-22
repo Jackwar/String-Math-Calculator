@@ -4,7 +4,12 @@ using System.Text;
 
 namespace Calculations
 {
-    class OperationSingle : Operation
+    /*
+    * 
+    * A stored Operation that requires a single number to calculate.
+    * 
+    */
+    class OperationSingle : OperationCalc
     {
         public int Weight { get; private set; }
         public CalculationSingle CalcSingle { get; private set; }       

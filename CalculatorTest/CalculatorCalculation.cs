@@ -5,6 +5,14 @@ using System.Threading.Tasks;
 
 namespace Calculations
 {
+    /*
+     * 
+     * Holds operations in a binary tree, weighted by orders of operations order.
+     * The first operation added is always to the right, usually as a CalculatorNumber
+     * unless parentheses are used.
+     * A single operation can be held.
+     * 
+     */
     public class CalculatorCalculation : CalculatorItem
     {
 

@@ -4,7 +4,13 @@ using System.Text;
 
 namespace Calculations
 {
-    class OperationPair : Operation
+
+    /*
+     * 
+     * A stored Operation that requires a pair of numbers to calculate
+     * 
+     */
+    class OperationPair : OperationCalc
     {
         public int Weight { get; private set; }
         public CalculationPair CalcPair { get; private set; }

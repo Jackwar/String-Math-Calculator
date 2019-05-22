@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace Calculations
 {
+
+    /*
+     * 
+     * A single number to be held in a CalculatorCalculation's binary tree
+     * 
+     */
     public class CalculatorNumber : CalculatorItem
     {
         private readonly double _num;

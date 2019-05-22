@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Calculations
 {
-    abstract class Operation
+    abstract class OperationCalc : IOperation
     {
         public double X { get; private set; }
 
-        public Operation(double x)
+        public OperationCalc(double x)
         {
             X = x;
         }

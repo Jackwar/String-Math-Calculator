@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Calculations;
 
 namespace Calculations
 {
     public delegate double CalculationPair(double x, double y);
     public delegate double CalculationSingle(double x);
 
+    /// <include file='docs.xml' path='[@name="calculations"]/Calculator/*'/>
     public class Calculator
     {
         private Regex regex = new Regex(@"[+-\\*/^r]", RegexOptions.Compiled);
@@ -48,7 +50,8 @@ namespace Calculations
         //The main method for calculations
         //Reads the calculation string from right to left and parses the characters to doubles and operations 
         //if the string provided has illegal characters, or too many .'s in a number throw a FormatException
-        //
+
+        /// <include file='docs.xml' path='[@name="calculations"]/Calculation/*'/>
         public double Calculation(string calculations)
         {
 
@@ -57,16 +60,17 @@ namespace Calculations
 
             bool firstDot = true;
             Stack<char> numberChar = new Stack<char>();
-            Queue<Operation> operationOrder = new Queue<Operation>();
+            Queue<IOperation> operationOrder = new Queue<IOperation>();
+            int parenthesesNum = 0;
 
             for (int i = calcNoSpaces.Length - 1; i > -1; i--)
             {
                 char character = calcNoSpaces[i];
 
                 //Check if the chacter is a .
-                if(character.Equals('.'))
+                if (character.Equals('.'))
                 {
-                    if(firstDot)
+                    if (firstDot)
                     {
                         numberChar.Push(character);
                         firstDot = false;
@@ -74,7 +78,86 @@ namespace Calculations
                     //A number cannot have more than one . in it.
                     //If it does, throw a Format Exception.
                     else
-                    {   
+                    {
+                        throw new FormatException();
+                    }
+                }
+                //Check if the character is a right parentheses
+                else if (character.Equals(')'))
+                {
+                    //Check if there is a number waiting to be passed in numberChar
+                    if (numberChar.Count == 0)
+                    {
+                        parenthesesNum++;
+
+                        //Create a right OperationParentheses
+                        operationOrder.Enqueue(new OperationParentheses(false, true));
+                    }
+                    //If there is, throw a FormatException
+                    else
+                    {
+                        throw new FormatException();
+                    }
+                }
+                else if (character.Equals('('))
+                {
+                    //Check if we have right parentheses in the string for the left parentheses to close.
+                    //Also check if there is a number waiting to be passed.
+                    if (parenthesesNum > 0 && numberChar.Count != 0)
+                    {
+                        
+                        firstDot = true;
+
+                        //Queue the number in numberChar
+                        string numberString = new string(numberChar.ToArray());
+                        operationOrder.Enqueue(new OperationNum(double.Parse(numberString)));
+                        numberChar.Clear();
+
+                        //Check if we are at the end of the string or not
+                        if (i > 0)
+                        {
+                            int i2;
+                            //Loop for numbers or operations after the left parentheses.
+                            for (i2 = i; i2 > 0 && parenthesesNum > 0; i2--)
+                            {
+                                parenthesesNum--;
+                                var leftCharacter = calcNoSpaces[i2 - 1];
+                                var isNum = int.TryParse(leftCharacter.ToString(), out _);
+
+                                if (isNum || leftCharacter.Equals(')'))
+                                {
+                                    OperationParentheses operationParentheses = new OperationParentheses(true, false);
+                                    operationParentheses.calcPair = Times;
+                                    operationOrder.Enqueue(operationParentheses);
+
+                                    break;
+                                }
+                                else if (regex.IsMatch(calcNoSpaces.ToString()))
+                                {
+                                    OperationParentheses operationParentheses = new OperationParentheses(true, false);
+                                    operationParentheses.calcPair = GetCalculationPairAndWeight(leftCharacter).calculationPair;
+                                    operationOrder.Enqueue(operationParentheses);
+                                    i = i2;
+
+                                    break;
+                                }
+                                //If there are no numbers or operations left of the left parentheses then check
+                                //if the character left is a left parentheses. If they are not, throw an exception.
+                                else if (!leftCharacter.Equals('('))
+                                {
+                                    throw new FormatException();
+                                }
+                            }
+
+                            //Check if the end of the string had closed all parentheses.
+                            if(i2 == 0 && parenthesesNum > 0)
+                            {
+                                throw new FormatException();
+                            }
+                        }
+                    }
+                    else
+                    {
                         throw new FormatException();
                     }
                 }
@@ -148,14 +231,13 @@ namespace Calculations
                         }
                     }
                 }
-
             }
 
             return OrderCalculations(operationOrder);
         }
 
         //Reorder the operations in the opeartionsOrder Queue by weight of operation
-        private double OrderCalculations(Queue<Operation> operationOrder)
+        private double OrderCalculations(Queue<IOperation> operationOrder)
         {
             //The originCalculator is the top of the binary tree structure for the operations order
             var originCalculator = new CalculatorCalculation();
@@ -163,24 +245,26 @@ namespace Calculations
             var currentCalculator = originCalculator;
 
             //Loop through all the opearations and order them according to the order of operations
-            foreach(Operation operation in operationOrder)
+            foreach(IOperation operation in operationOrder)
             {
                 //Put the number associated with the operation to the right of the tree as a single number
-                var rightCalculator = new CalculatorNumber(operation.X);
-                currentCalculator.Right = rightCalculator;
-                
-                //Check if the Operation is a OperationPair
-                if(operation is OperationPair)
+                if (operation is OperationCalc operationCalc)
                 {
-                    OperationPair operationPair = (OperationPair)operation;
-                    currentCalculator.PairCalc = operationPair.CalcPair;
-                    currentCalculator.Weight = operationPair.Weight;
-                }
-                else if (operation is OperationNum)
-                {
-                    //If the Operation is an OperationNum, don't assign a calculation
-                    //and make the weight -1 so its operation order is never checked
-                    currentCalculator.Weight = -1;
+                    var rightCalculator = new CalculatorNumber(operationCalc.X);
+                    currentCalculator.Right = rightCalculator;
+
+                    //Check if the Operation is a OperationPair
+                    if (operation is OperationPair operationPair)
+                    {
+                        currentCalculator.PairCalc = operationPair.CalcPair;
+                        currentCalculator.Weight = operationPair.Weight;
+                    }
+                    else if (operation is OperationNum)
+                    {
+                        //If the Operation is an OperationNum, don't assign a calculation
+                        //and make the weight -1 so its operation order is never checked
+                        currentCalculator.Weight = -1;
+                    }
                 }
 
                 //The CalculatorCalculation above the current CalculationCalculator in the binary tree

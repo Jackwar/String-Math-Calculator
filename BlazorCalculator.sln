@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculations", "CalculatorT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculatorTesting", "CalculatorTesting\CalculatorTesting.csproj", "{6D6804CA-AFF0-4369-8C47-D79CD9D306B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorCalculator", "BlazorCalculator\BlazorCalculator.csproj", "{DFDE1B9D-04A3-4409-BB98-FC6E78A49E35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCalculator", "BlazorCalculator\BlazorCalculator.csproj", "{DFDE1B9D-04A3-4409-BB98-FC6E78A49E35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculatorUnitTests", "CalculatorUnitTests\CalculatorUnitTests.csproj", "{C8F8399B-B8FC-453D-A411-77351A43452E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{DFDE1B9D-04A3-4409-BB98-FC6E78A49E35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFDE1B9D-04A3-4409-BB98-FC6E78A49E35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFDE1B9D-04A3-4409-BB98-FC6E78A49E35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8F8399B-B8FC-453D-A411-77351A43452E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8F8399B-B8FC-453D-A411-77351A43452E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8F8399B-B8FC-453D-A411-77351A43452E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8F8399B-B8FC-453D-A411-77351A43452E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
