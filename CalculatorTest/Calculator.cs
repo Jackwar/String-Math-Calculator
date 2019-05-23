@@ -15,7 +15,6 @@ namespace Calculations
     public class Calculator
     {
         private Regex regex = new Regex(@"[+-\\*/^r]", RegexOptions.Compiled);
-        //private delegate double calculationDelegate(double x, double y);
 
         private double Exponent(double x, double y)
         {
@@ -126,34 +125,62 @@ namespace Calculations
 
                                 if (isNum || leftCharacter.Equals(')'))
                                 {
-                                    OperationParentheses operationParentheses = new OperationParentheses(true, false);
-                                    operationParentheses.calcPair = Times;
+                                    var pairAndWeight = GetCalculationPairAndWeight('*');
+                                    OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                    {
+                                        calcPair = pairAndWeight.calculationPair,
+                                        Weight = pairAndWeight.weight
+                                    };
                                     operationOrder.Enqueue(operationParentheses);
 
                                     break;
                                 }
-                                else if (regex.IsMatch(calcNoSpaces.ToString()))
+                                else if (regex.IsMatch(leftCharacter.ToString()))
                                 {
-                                    OperationParentheses operationParentheses = new OperationParentheses(true, false);
-                                    operationParentheses.calcPair = GetCalculationPairAndWeight(leftCharacter).calculationPair;
+                                    var pairAndWeight = GetCalculationPairAndWeight(leftCharacter);
+                                    OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                    {
+                                        calcPair = pairAndWeight.calculationPair,
+                                        Weight = pairAndWeight.weight
+                                    };
                                     operationOrder.Enqueue(operationParentheses);
-                                    i = i2;
+
+                                    i = i2 - 1;
 
                                     break;
                                 }
                                 //If there are no numbers or operations left of the left parentheses then check
                                 //if the character left is a left parentheses. If they are not, throw an exception.
-                                else if (!leftCharacter.Equals('('))
+                                else if (leftCharacter.Equals('('))
+                                {
+                                    var operationParentheses = new OperationParentheses(true, false);
+                                    operationOrder.Enqueue(operationParentheses);
+
+                                    //i = i2;
+                                }
+                                else
                                 {
                                     throw new FormatException();
                                 }
                             }
 
                             //Check if the end of the string had closed all parentheses.
-                            if(i2 == 0 && parenthesesNum > 0)
+                            if(i2 == 0 && parenthesesNum == 1)
+                            {
+                                var operationParentheses = new OperationParentheses(true, false);
+                                operationOrder.Enqueue(operationParentheses);
+
+                                i = 0;
+                            }
+                            else if(i2 == 0 && parenthesesNum > 0)
                             {
                                 throw new FormatException();
                             }
+                        }
+                        else
+                        {
+                            var operationParentheses = new OperationParentheses(true, false);
+                            operationOrder.Enqueue(operationParentheses);
                         }
                     }
                     else
@@ -192,13 +219,13 @@ namespace Calculations
                             if(character.Equals('-'))
                             {
                                 //Check if we are at the end of the string
-                                //If we are not, check for a new operation after the '-' character
+                                //If we are not, check for a new operation or right parentheses after the '-' character
                                 if(i > 0)
                                 {
                                     char nextCharacter = calcNoSpaces[i - 1];
                                     isNum = int.TryParse(nextCharacter.ToString(), out _);
 
-                                    if(!isNum)
+                                    if(!isNum && !nextCharacter.Equals(')'))
                                     {
                                         numberChar.Push(character);
                                         character = calcNoSpaces[--i];
@@ -244,6 +271,10 @@ namespace Calculations
             //The current calculation, start with the origin
             var currentCalculator = originCalculator;
 
+            //The stack for determining the current parentheses we are in
+            var parenthesesStack = new Stack<CalculatorCalculation>();
+            //originStack.Push(originCalculator);
+
             //Loop through all the opearations and order them according to the order of operations
             foreach(IOperation operation in operationOrder)
             {
@@ -264,6 +295,49 @@ namespace Calculations
                         //If the Operation is an OperationNum, don't assign a calculation
                         //and make the weight -1 so its operation order is never checked
                         currentCalculator.Weight = -1;
+                    }
+                }
+                //Operation is an OperationParentheses
+                else
+                {
+                    var operationParentheses = (OperationParentheses)operation;
+
+                    //Check if operation is a right parentheses
+                    if(operationParentheses.RightParentheses)
+                    {
+                        //Set the parentheses calculation with a weight -1 so its operation order is never checked
+                        currentCalculator.Weight = -1;
+                        currentCalculator.Right = new CalculatorCalculation()
+                        {
+                            Top = currentCalculator
+                        };
+                        parenthesesStack.Push(currentCalculator);
+
+                        currentCalculator = (CalculatorCalculation) currentCalculator.Right;
+
+                        continue;
+                    }
+                    //The operation is a left parentheses
+                    else
+                    {
+                        var rightParentheses = parenthesesStack.Pop();
+                        
+                        if(operationParentheses.calcPair != null)
+                        {
+                            rightParentheses.Weight = operationParentheses.Weight;
+                            rightParentheses.PairCalc = operationParentheses.calcPair;
+                            currentCalculator = rightParentheses;
+                        }
+                        else
+                        {
+                            var tempTop = (CalculatorCalculation)rightParentheses.Top;
+                            if (tempTop != null)
+                            {
+                                tempTop.Left = rightParentheses;
+                            }
+
+                            continue;
+                        }
                     }
                 }
 
@@ -310,7 +384,14 @@ namespace Calculations
 
                                 if(tempTopCalculator != null)
                                 {
-                                    tempTopCalculator.Left = newTopCalculator;
+                                    if(tempTopCalculator.Weight != -1)
+                                    {
+                                        tempTopCalculator.Left = newTopCalculator;
+                                    }
+                                    else
+                                    {
+                                        tempTopCalculator.Right = newTopCalculator;
+                                    }
                                 }
                                 //If there is no Top calculator break the loop
                                 else
@@ -324,20 +405,31 @@ namespace Calculations
                         else
                         {
                             //If the weights were already ordered, add the currentCalculator to the left of the Top
-                            topCalculator.Left = currentCalculator;
+                            //Don't add to the left if the topCalculator has the weight of a parentheses
+                            if (topCalculator.Weight != -1)
+                            {
+                                topCalculator.Left = currentCalculator;
+                            }
                         }
                     }
                     else
                     {
                         //If the current calculator is a OperationNum, add the currentCalculator to the left of the Top
-                        topCalculator.Left = currentCalculator;
+                        //Don't add to the left if the topCalculator has the weight of a parentheses
+                        if (topCalculator.Weight != -1)
+                        {
+                            topCalculator.Left = currentCalculator;
+                        }
                     }
                 }
 
                 //Setup the currentCalculator as the new Top for the next CalculationCalculator in the loop
-                var tempCalculator = currentCalculator;
-                currentCalculator = new CalculatorCalculation();
-                currentCalculator.Top = tempCalculator;
+                //var tempCalculator = currentCalculator;
+                currentCalculator = new CalculatorCalculation()
+                {
+                    Top =  currentCalculator
+                };
+                //currentCalculator.Top = tempCalculator;
 
             }
 

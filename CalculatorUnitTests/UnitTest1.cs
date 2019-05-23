@@ -161,5 +161,21 @@ namespace CalculatorUnitTests
 
             Assert.AreEqual(product, -24);
         }
+
+        [TestMethod]
+        public void Calculator_Parentheses()
+        {
+            double product = calculator.Calculation("(5 - ((7 + 9) * (6 / 5) * (6 * (6 + 3))) - 6 / 5) + (7 + 5)");
+
+            Assert.AreEqual(product, -1021);
+        }
+
+        [TestMethod]
+        public void Calculator_Parentheses_surrounding()
+        {
+            double product = calculator.Calculation("((5 - ((7 + 9) * (6 / 5) * (6 * (6 + 3))) - 6 / 5) + (7 + 5))");
+
+            Assert.AreEqual(product, -1021);
+        }
     }
 }
