@@ -9,6 +9,20 @@
     <table class="calculator-table">
         <tr>
             <td>
+                <button class="calulator-button calculator-button-small" onclick="insertText('log10')">log10</button>
+            </td>
+            <td>
+                <button class="calulator-button calculator-button-small" onclick="insertText('log')">logₓ</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText('(')">(</button>
+            </td>
+            <td>
+                <button class="calulator-button" onclick="insertText(')')">)</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <button class="calulator-button" onclick="insertText('^')">yˣ</button>
             </td>
             <td>
@@ -65,7 +79,7 @@
         </tr>
         <tr>
             <td>
-                <button class="calulator-button" onclick="insertText(' ')"></button>
+                <button class="calulator-button" onclick="@ClearText">C</button>
             </td>
             <td>
                 <button class="calulator-button" onclick="insertText('0')">0</button>
@@ -95,5 +109,10 @@
     protected override void OnAfterRender()
     {
         JSRuntime.InvokeAsync<object>("activateTextArea", "");
+    }
+
+    void ClearText()
+    {
+        calculatorInput = string.Empty;
     }
 }

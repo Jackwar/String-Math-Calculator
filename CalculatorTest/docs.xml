@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <docs>
+  <assembly>
+    <name>Calculations</name>
+  </assembly>
   <members name="calculations">
     <Calculator>
       <summary>

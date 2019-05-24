@@ -1,4 +1,5 @@
 ﻿var isMobile = false;
+var malformed = false;
 
 function activateTextArea() {
    
@@ -27,7 +28,7 @@ function insertText(text) {
     input.value = textBefore + text + textAfter;
     input.dispatchEvent(event);
     input.focus();
-    input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+    input.setSelectionRange(cursorPos + text.length, cursorPos + text.length);
 }
 
 function deleteText() {
@@ -52,4 +53,15 @@ function deleteText() {
 function reFocusText() {
     var input = document.getElementById("calculator-textbox");
     input.focus();
+}
+
+function clearText() {
+    var input = document.getElementById("calculator-textbox");
+    input.value = "";
+}
+
+function malformedExpression() {
+    malformed = true;
+
+
 }

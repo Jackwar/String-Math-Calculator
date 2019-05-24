@@ -14,7 +14,7 @@ namespace Calculations
     /// <include file='docs.xml' path='[@name="calculations"]/Calculator/*'/>
     public class Calculator
     {
-        private Regex regex = new Regex(@"[+-\\*/^r]", RegexOptions.Compiled);
+        private Regex regex = new Regex(@"[+-\\*/^rg]", RegexOptions.Compiled);
 
         private double Exponent(double x, double y)
         {
@@ -46,6 +46,11 @@ namespace Calculations
             return Math.Pow(x, 1/y);
         }
 
+        private double Log(double x, double y)
+        {
+            return Math.Log(x, y);
+        }
+
         //The main method for calculations
         //Reads the calculation string from right to left and parses the characters to doubles and operations 
         //if the string provided has illegal characters, or too many .'s in a number throw a FormatException
@@ -55,7 +60,7 @@ namespace Calculations
         {
 
             calculations.Trim();
-            string calcNoSpaces = calculations.Replace(" ", "");
+            string calcNoSpaces = calculations.ToLower().Replace(" ", "");
 
             bool firstDot = true;
             Stack<char> numberChar = new Stack<char>();
@@ -66,7 +71,6 @@ namespace Calculations
             {
                 char character = calcNoSpaces[i];
 
-                //Check if the chacter is a .
                 if (character.Equals('.'))
                 {
                     if (firstDot)
@@ -81,7 +85,6 @@ namespace Calculations
                         throw new FormatException();
                     }
                 }
-                //Check if the character is a right parentheses
                 else if (character.Equals(')'))
                 {
                     //Check if there is a number waiting to be passed in numberChar
@@ -92,7 +95,6 @@ namespace Calculations
                         //Create a right OperationParentheses
                         operationOrder.Enqueue(new OperationParentheses(false, true));
                     }
-                    //If there is, throw a FormatException
                     else
                     {
                         throw new FormatException();
@@ -155,8 +157,6 @@ namespace Calculations
                                 {
                                     var operationParentheses = new OperationParentheses(true, false);
                                     operationOrder.Enqueue(operationParentheses);
-
-                                    //i = i2;
                                 }
                                 else
                                 {
@@ -246,6 +246,25 @@ namespace Calculations
                         //Else throw an exception
                         if(regex.IsMatch(character.ToString()))
                         {
+                            //Check if the next characters after g spell log
+                            if(character.Equals('g'))
+                            {
+                                if(i > 2)
+                                {
+                                    if(!calcNoSpaces[i - 1].Equals('o') || !calcNoSpaces[i - 2].Equals('l'))
+                                    {
+                                        throw new FormatException();
+                                    }
+                                    else
+                                    {
+                                        i -= 2;
+                                    }
+                                }
+                                else
+                                {
+                                    throw new FormatException();
+                                }
+                            }
                             var  calculationPairAndWeight = GetCalculationPairAndWeight(character);
                             operationOrder.Enqueue(
                                 new OperationPair(currentNumber,
@@ -456,6 +475,8 @@ namespace Calculations
                     return (Exponent, 2);
                 case 'r':
                     return (Root, 2);
+                case 'g':
+                    return (Log, 2);
                 default:
                     throw new FormatException();
             }

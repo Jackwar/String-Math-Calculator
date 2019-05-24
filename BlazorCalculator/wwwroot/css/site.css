@@ -15,6 +15,10 @@ html, body {
     outline: none;
 }
 
+.calculator-button-small {
+    font-size: 2em;
+}
+
     .calulator-button:hover {
         background-color: #84ffff;
     }
@@ -68,6 +72,10 @@ textarea:focus {
         border-style: outset;
         border: none;
         outline: none;
+    }
+
+    .calculator-button-small {
+        font-size: 1.5em;
     }
 
     .calculator-input {
