@@ -16,7 +16,7 @@ html, body {
 }
 
 .calculator-button-small {
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
     .calulator-button:hover {
@@ -75,7 +75,7 @@ textarea:focus {
     }
 
     .calculator-button-small {
-        font-size: 1.5em;
+        font-size: 2em;
     }
 
     .calculator-input {
