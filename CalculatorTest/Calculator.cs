@@ -350,6 +350,9 @@ namespace Calculations
                         else
                         {
                             var tempTop = (CalculatorCalculation)rightParentheses.Top;
+                            //If extraneous parentheses surround the given string operation the top calculation
+                            //will end up as a parentheses, and subsequently have no left operation
+                            //Check if there is a calculation above the current parentheses, otherwise don't add to left.
                             if (tempTop != null)
                             {
                                 tempTop.Left = rightParentheses;
