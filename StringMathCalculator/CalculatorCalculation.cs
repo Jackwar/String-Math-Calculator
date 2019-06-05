@@ -13,12 +13,12 @@ namespace Calculations
      * A single operation can be held.
      * 
      */
-    public class CalculatorCalculation : CalculatorItem
+    public class CalculatorCalculation : ICalculatorItem
     {
 
-        public CalculatorItem Left { get; set; }
-        public CalculatorItem Right { get; set; }
-        public CalculatorItem Top { get; set; }
+        public ICalculatorItem Left { get; set; }
+        public ICalculatorItem Right { get; set; }
+        public ICalculatorItem Top { get; set; }
         public CalculationPair PairCalc { get; set; }
         public CalculationSingle SingleCalc { get; set; }
         public int Weight { get; set; }

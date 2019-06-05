@@ -15,8 +15,6 @@ namespace CalculatorTesting
             //Log is with log. (Number log log)
 
             Calculator calculator = new Calculator();
-            
-            Console.WriteLine(calculator.Calculation("((5 - ((7 + 9) * (6 / 5) * (6 * (6 + 3))) - 6 / 5) + (7 + 5))").Calculate());
 
             //Square root of 4. Any root can be used on the right side of r.
             Console.WriteLine(calculator.Calculation("4 r 2").Calculate());

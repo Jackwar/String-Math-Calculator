@@ -20,22 +20,26 @@ Exp: "3 + 7 / 6 - (6 * 4)"</Description>
     <RepositoryType></RepositoryType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile></DocumentationFile>
     <OutputPath></OutputPath>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\stelf\source\repos\BlazorCalculator\CalculatorTest\Calculations.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="license.txt" />
+    <None Include="license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="docs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\..\Documents\license.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 

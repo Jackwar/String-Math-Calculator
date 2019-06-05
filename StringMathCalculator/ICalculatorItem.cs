@@ -11,7 +11,7 @@ namespace Calculations
      * for a binary tree with a CalculatorCalculation at the top.
      * 
      */
-    public interface CalculatorItem
+    public interface ICalculatorItem
     {
         double Calculate();
     }

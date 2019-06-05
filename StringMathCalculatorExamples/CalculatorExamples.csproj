@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CalculatorTest\StringMathCalculator.csproj" />
+    <ProjectReference Include="..\StringMathCalculator\StringMathCalculator.csproj" />
   </ItemGroup>
 
 </Project>

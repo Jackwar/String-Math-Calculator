@@ -11,7 +11,7 @@ namespace Calculations
      * A single number to be held in a CalculatorCalculation's binary tree
      * 
      */
-    public class CalculatorNumber : CalculatorItem
+    public class CalculatorNumber : ICalculatorItem
     {
         private readonly double _num;
 
