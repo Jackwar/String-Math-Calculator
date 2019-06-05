@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Calculations
 {
-    abstract class OperationCalc : IOperation
+    abstract class OperationCalc
     {
         public double X { get; private set; }
 

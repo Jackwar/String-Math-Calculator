@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Calculations
 {
-    class OperationParentheses : IOperation
+    class OperationParentheses
     {
         public bool LeftParentheses { get; private set; }
         public bool RightParentheses { get; private set; }
