@@ -15,6 +15,9 @@ Exp: "3 + 7 / 6 - (6 * 4)"</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Jackson Warburton</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/Jackwar/String-Math-Calculator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jackwar/String-Math-Calculator</RepositoryUrl>
+    <RepositoryType></RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
