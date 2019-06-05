@@ -100,7 +100,7 @@
 
     void RunCalculation()
     {
-        double product = calculator.Calculation(calculatorInput);
+        double product = calculator.Calculation(calculatorInput).Calculate();
         calculatorInput = product.ToString();
 
         JSRuntime.InvokeAsync<object>("reFocusText", "");

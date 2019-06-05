@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Calculations</RootNamespace>
+    <Authors>Jackson Warburton</Authors>
+    <Company />
+    <Description>String Calculator is able to solve math calculations within a string, returning a double as the product. Supports the basic operators, *, /, + and -. Also supports parentheses, roots, exponents and logarithms. The operations are calculated left to right by PEMDAS order.
+
+Exp: "3 + 7 / 6 - (6 * 4)"</Description>
+    <Product>String Math Calculator</Product>
+    <PackageId>StringMathCalculator</PackageId>
+    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <Version>0.1.0</Version>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <Copyright>Copyright (c) 2019 Jackson Warburton</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\stelf\source\repos\BlazorCalculator\CalculatorTest\Calculations.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="docs.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Documents\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CalculatorTest\Calculations.csproj" />
+    <Folder Include="Shared\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\" />
+    <ProjectReference Include="..\CalculatorTest\StringCalculator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,7 +11,6 @@ namespace Calculations
     public delegate double CalculationPair(double x, double y);
     public delegate double CalculationSingle(double x);
 
-    /// <include file='docs.xml' path='[@name="calculations"]/Calculator/*'/>
     public class Calculator
     {
         private Regex regex = new Regex(@"[+-\\*/^rg]", RegexOptions.Compiled);
@@ -55,8 +54,7 @@ namespace Calculations
         //Reads the calculation string from right to left and parses the characters to doubles and operations 
         //if the string provided has illegal characters, or too many .'s in a number throw a FormatException
 
-        /// <include file='docs.xml' path='[@name="calculations"]/Calculation/*'/>
-        public double Calculation(string calculations)
+        public CalculatorCalculation Calculation(string calculations)
         {
 
             calculations.Trim();
@@ -283,7 +281,8 @@ namespace Calculations
         }
 
         //Reorder the operations in the opeartionsOrder Queue by weight of operation
-        private double OrderCalculations(Queue<IOperation> operationOrder)
+        //private double OrderCalculations(Queue<IOperation> operationOrder)
+        private CalculatorCalculation OrderCalculations(Queue<IOperation> operationOrder)
         {
             //The originCalculator is the top of the binary tree structure for the operations order
             var originCalculator = new CalculatorCalculation();
@@ -456,7 +455,7 @@ namespace Calculations
             }
 
             //Run the operations
-            return originCalculator.Calculate();
+            return originCalculator;
         }
 
 

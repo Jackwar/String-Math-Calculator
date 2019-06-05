@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CalculatorTest\Calculations.csproj" />
+    <ProjectReference Include="..\CalculatorTest\StringMathCalculator.csproj" />
   </ItemGroup>
 
 </Project>
