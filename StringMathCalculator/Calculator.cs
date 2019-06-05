@@ -62,7 +62,7 @@ namespace Calculations
 
             bool firstDot = true;
             Stack<char> numberChar = new Stack<char>();
-            Queue<IOperation> operationOrder = new Queue<IOperation>();
+            Queue<object> operationOrder = new Queue<object>();
             int parenthesesNum = 0;
 
             for (int i = calcNoSpaces.Length - 1; i > -1; i--)
@@ -282,7 +282,7 @@ namespace Calculations
 
         //Reorder the operations in the opeartionsOrder Queue by weight of operation
         //private double OrderCalculations(Queue<IOperation> operationOrder)
-        private CalculatorCalculation OrderCalculations(Queue<IOperation> operationOrder)
+        private CalculatorCalculation OrderCalculations(Queue<object> operationOrder)
         {
             //The originCalculator is the top of the binary tree structure for the operations order
             var originCalculator = new CalculatorCalculation();
@@ -294,7 +294,7 @@ namespace Calculations
             //originStack.Push(originCalculator);
 
             //Loop through all the opearations and order them according to the order of operations
-            foreach(IOperation operation in operationOrder)
+            foreach(object operation in operationOrder)
             {
                 //Put the number associated with the operation to the right of the tree as a single number
                 if (operation is OperationCalc operationCalc)
