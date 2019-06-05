@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringMathCalculator", "CalculatorTest\StringMathCalculator.csproj", "{415687D0-BEB2-4160-9AB4-3F59E5A4FC3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringMathCalculator", "StringMathCalculator\StringMathCalculator.csproj", "{415687D0-BEB2-4160-9AB4-3F59E5A4FC3A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculatorExamples", "CalculatorTesting\CalculatorExamples.csproj", "{6D6804CA-AFF0-4369-8C47-D79CD9D306B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculatorExamples", "StringMathCalculatorExamples\CalculatorExamples.csproj", "{6D6804CA-AFF0-4369-8C47-D79CD9D306B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculatorUnitTests", "CalculatorUnitTests\CalculatorUnitTests.csproj", "{C8F8399B-B8FC-453D-A411-77351A43452E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculatorUnitTests", "StringMathCalculatorUnitTests\CalculatorUnitTests.csproj", "{C8F8399B-B8FC-453D-A411-77351A43452E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
