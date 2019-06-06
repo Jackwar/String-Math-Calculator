@@ -30,7 +30,7 @@ https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-packag
 
 A basic forumla, operations are performed left to right, in PEMDAS order.
 ```
-using Calculations;
+using StringMathCalculator;
 
 Calculator calculator = new Calculator();
 
