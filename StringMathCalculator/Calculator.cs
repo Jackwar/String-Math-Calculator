@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Calculations;
+using StringMathCalculator.Calculations;
 
-namespace Calculations
+namespace StringMathCalculator
 {
-    public delegate double CalculationPair(double x, double y);
-    public delegate double CalculationSingle(double x);
 
     public class Calculator
     {
@@ -280,8 +275,7 @@ namespace Calculations
             return OrderCalculations(operationOrder);
         }
 
-        //Reorder the operations in the opeartionsOrder Queue by weight of operation
-        //private double OrderCalculations(Queue<IOperation> operationOrder)
+        //Reorder the operations in the opertionsOrder Queue by weight of operation
         private CalculatorCalculation OrderCalculations(Queue<object> operationOrder)
         {
             //The originCalculator is the top of the binary tree structure for the operations order
@@ -291,7 +285,6 @@ namespace Calculations
 
             //The stack for determining the current parentheses we are in
             var parenthesesStack = new Stack<CalculatorCalculation>();
-            //originStack.Push(originCalculator);
 
             //Loop through all the opearations and order them according to the order of operations
             foreach(object operation in operationOrder)
@@ -302,7 +295,6 @@ namespace Calculations
                     var rightCalculator = new CalculatorNumber(operationCalc.X);
                     currentCalculator.Right = rightCalculator;
 
-                    //Check if the Operation is a OperationPair
                     if (operation is OperationPair operationPair)
                     {
                         currentCalculator.PairCalc = operationPair.CalcPair;
@@ -445,12 +437,10 @@ namespace Calculations
                 }
 
                 //Setup the currentCalculator as the new Top for the next CalculationCalculator in the loop
-                //var tempCalculator = currentCalculator;
                 currentCalculator = new CalculatorCalculation()
                 {
                     Top =  currentCalculator
                 };
-                //currentCalculator.Top = tempCalculator;
 
             }
 

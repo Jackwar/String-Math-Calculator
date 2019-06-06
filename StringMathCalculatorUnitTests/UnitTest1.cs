@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Calculations;
+using StringMathCalculator;
 
 namespace CalculatorUnitTests
 {

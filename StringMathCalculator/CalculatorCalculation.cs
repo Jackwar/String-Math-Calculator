@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Calculations
+﻿namespace StringMathCalculator.Calculations
 {
     /*
      * 
@@ -13,6 +8,10 @@ namespace Calculations
      * A single operation can be held.
      * 
      */
+
+    public delegate double CalculationPair(double x, double y);
+    public delegate double CalculationSingle(double x);
+
     public class CalculatorCalculation : ICalculatorItem
     {
 

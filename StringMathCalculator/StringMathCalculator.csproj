@@ -2,16 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Calculations</RootNamespace>
+    <RootNamespace>StringMathCalculator</RootNamespace>
     <Authors>Jackson Warburton</Authors>
     <Company />
-    <Description>String Calculator is able to solve math calculations within a string, returning a double as the product. Supports the basic operators, *, /, + and -. Also supports parentheses, roots, exponents and logarithms. The operations are calculated left to right by PEMDAS order.
+    <Description>String Math Calculator is able to solve math calculations within a string, returning a double as the product. Supports the basic operators, *, /, + and -. Also supports parentheses, roots, exponents and logarithms. The operations are calculated left to right by PEMDAS order.
 
-Exp: "3 + 7 / 6 - (6 * 4)"</Description>
+Exp: 
+
+using StringMathCalculator;
+
+Calculator calculator = new Calculator();
+
+Console.WriteLine(calculator.Calculation("3 + 7 / 6 - (6 * 4)").Calculate());</Description>
     <Product>String Math Calculator</Product>
     <PackageId>StringMathCalculator</PackageId>
-    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
-    <Version>0.1.0</Version>
+    <PackageReleaseNotes>Changed default namespace from Calculations to StringMathCalculator</PackageReleaseNotes>
+    <Version>0.1.2</Version>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Jackson Warburton</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
