@@ -18,11 +18,11 @@ Windows, Linux, Mac -
 
 ### Installation
 
-String Math Calculator is available to install as a Nuget package
+String Math Calculator is available to install as a Nuget package:
 
 https://www.nuget.org/packages/StringMathCalculator/
 
-Nuget installation instructions
+Nuget installation instructions:
 
 https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package
 
