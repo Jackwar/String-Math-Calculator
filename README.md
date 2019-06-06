@@ -4,7 +4,27 @@ String Math Calculator is able to solve math calculations within a string, retur
 
 ## Getting Started
 
-WIP
+### Prerequisites
+
+A .net framework that conforms to .net standard 2.0
+
+https://dotnet.microsoft.com/
+
+Windows -
+.net framework or .net core
+
+Windows, Linux, Mac
+.net core
+
+### Installation
+
+String Math Calculator is available to install as a Nuget package
+
+https://www.nuget.org/packages/StringMathCalculator/
+
+Nuget installation instructions
+
+https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package
 
 ## Examples
 
