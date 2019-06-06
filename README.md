@@ -13,7 +13,7 @@ https://dotnet.microsoft.com/
 Windows -
 .net framework or .net core
 
-Windows, Linux, Mac
+Windows, Linux, Mac -
 .net core
 
 ### Installation
