@@ -40,40 +40,20 @@ Console.WriteLine(calculator.Calculation("3 + 8 - 9 / 7 * 6").Calculate());
 
 Square root of 4. Any root can be used on the right side of r.
 ```
-using Calculations;
-
-Calculator calculator = new Calculator();
-
-//Calculate returns a double
 Console.WriteLine(calculator.Calculation("4 r 2").Calculate());
 ```
 
 Exponent, 4 by the power of two.
 ```
-using Calculations;
-
-Calculator calculator = new Calculator();
-
-//Calculate returns a double
 Console.WriteLine(calculator.Calculation("4 ^ 2").Calculate());
 ```
 
 Log, 4 by the log of 2.
 ```
-using Calculations;
-
-Calculator calculator = new Calculator();
-
-//Calculate returns a double
 Console.WriteLine(calculator.Calculation("4 ^ 2").Calculate());
 ```
 
 Parentheses can be used
 ```
-using Calculations;
-
-Calculator calculator = new Calculator();
-
-//Calculate returns a double
 Console.WriteLine(calculator.Calculation("(3 + 4) * 2").Calculate());
 ```
