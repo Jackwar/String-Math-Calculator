@@ -123,6 +123,22 @@ namespace CalculatorUnitTests
         }
 
         [TestMethod]
+        public void Calculator_Log_TwoNumbers()
+        {
+            double product = calculator.Calculation("8 log 2").Calculate();
+
+            Assert.AreEqual(product, 3);
+        }
+
+        [TestMethod]
+        public void Calculator_Log_AgainstParentheses()
+        {
+            double product = calculator.Calculation("8 log (1 + 1)").Calculate();
+
+            Assert.AreEqual(product, 3);
+        }
+
+        [TestMethod]
         public void Calculator_OrderOfOperations()
         {
             double product = calculator.Calculation("5 * 3 + 7 * 7 * 9 / 10").Calculate();
@@ -162,6 +178,15 @@ namespace CalculatorUnitTests
             Assert.AreEqual(product, -24);
         }
 
+
+        [TestMethod]
+        public void Calculator_Negative_end_of_parenthese()
+        {
+            double product = calculator.Calculation("(-5 + 5)").Calculate();
+
+            Assert.AreEqual(product, 0);
+        }
+
         [TestMethod]
         public void Calculator_Parentheses()
         {
@@ -177,5 +202,22 @@ namespace CalculatorUnitTests
 
             Assert.AreEqual(product, -1021);
         }
+
+        [TestMethod]
+        public void Calculator_Parentheses_TimesRight()
+        {
+            double product = calculator.Calculation("(3)8 * 2").Calculate();
+
+            Assert.AreEqual(product, 48);
+        }
+
+        [TestMethod]
+        public void Calculator_Parentheses_TimesLeft()
+        {
+            double product = calculator.Calculation("3 * 2(8)").Calculate();
+
+            Assert.AreEqual(product, 48);
+        }
+
     }
 }

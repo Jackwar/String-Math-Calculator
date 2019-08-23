@@ -8,7 +8,7 @@ namespace CalculatorTesting
     {
         static void Main(string[] args)
         {
-            //Supported operations are +, -, / *
+            //Supported operations are + - / *
             //Exponents are with the ^ symbol. (Number ^ Power)
             //Roots are done with r. (Number r Root)
             //Log is with log. (Number log log)
@@ -29,7 +29,12 @@ namespace CalculatorTesting
 
             //Parentheses can be used
             Console.WriteLine(calculator.Calculation("(3 + 4) * 2").Calculate());
-            
+
+            //The times operator can be ommited when next to a parentheses
+            Console.WriteLine(calculator.Calculation("(3 + 4) 2").Calculate());
+
+            //This works in both directions
+            Console.WriteLine(calculator.Calculation("2 (3 + 4)").Calculate());
         }
     }
 }

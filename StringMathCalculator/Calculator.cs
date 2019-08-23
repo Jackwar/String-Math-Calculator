@@ -8,7 +8,9 @@ namespace StringMathCalculator
 
     public class Calculator
     {
-        private Regex regex = new Regex(@"[+-\\*/^rg]", RegexOptions.Compiled);
+        //private Regex regex = new Regex(@"[+-\\*/^rg]", RegexOptions.Compiled);
+        private Regex removeSpaces = new Regex(@"\t |\n |\r |\s", RegexOptions.Compiled);
+        private Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()]", RegexOptions.Compiled);
 
         private double Exponent(double x, double y)
         {
@@ -47,64 +49,89 @@ namespace StringMathCalculator
 
         //The main method for calculations
         //Reads the calculation string from right to left and parses the characters to doubles and operations 
-        //if the string provided has illegal characters, or too many .'s in a number throw a FormatException
+        //if the string provided has illegal characters, or too many decimals in a number throw a FormatException
 
         public CalculatorCalculation Calculation(string calculations)
         {
 
-            calculations.Trim();
-            string calcNoSpaces = calculations.ToLower().Replace(" ", "");
+            //calculations = calculations.Trim();
 
-            bool firstDot = true;
+            calculations = removeSpaces.Replace(calculations, "").ToLower();
+            string logRemoved = calculations.Replace("log", "");
+
+            if(legalCharacters.IsMatch(logRemoved))
+            {
+                throw new FormatException("Illegal characters in calculation.");
+            }
+
+            bool firstDecimal = true;
+            int parenthesesNum = 0;
+            bool operationNext = true;
+            bool negativeNum = false;
             Stack<char> numberChar = new Stack<char>();
             Queue<object> operationOrder = new Queue<object>();
-            int parenthesesNum = 0;
 
-            for (int i = calcNoSpaces.Length - 1; i > -1; i--)
+            for (int i = calculations.Length - 1; i > -1; i--)
             {
-                char character = calcNoSpaces[i];
+                var isNum = int.TryParse(calculations[i].ToString(), out _);
 
-                if (character.Equals('.'))
+                //If the character is a number add it to the numberChar queue
+                if (isNum)
                 {
-                    if (firstDot)
+                    operationNext = true;
+                    numberChar.Push(calculations[i]);
+                    //Check if we are on the end of the operations string
+                    //If we are, add a SingleNum to the operation order with the number
+                    if (i == 0)
                     {
-                        numberChar.Push(character);
-                        firstDot = false;
-                    }
-                    //A number cannot have more than one . in it.
-                    //If it does, throw a Format Exception.
-                    else
-                    {
-                        throw new FormatException();
+                        string numberString = new string(numberChar.ToArray());
+                        operationOrder.Enqueue(new OperationNum(double.Parse(numberString)));
                     }
                 }
-                else if (character.Equals(')'))
+                else if (calculations[i].Equals(')'))
                 {
+                    parenthesesNum++;
+
                     //Check if there is a number waiting to be passed in numberChar
-                    if (numberChar.Count == 0)
+                    if (numberChar.Count != 0)
                     {
-                        parenthesesNum++;
+                        if(negativeNum && numberChar.Count == 1)
+                        {
+                            throw new FormatException("Double negative found in front of parentheses.");
+                        }
 
-                        //Create a right OperationParentheses
-                        operationOrder.Enqueue(new OperationParentheses(false, true));
+                        negativeNum = false;
+                        operationNext = false;
+                        firstDecimal = true;
+
+                        double number = double.Parse(new string(numberChar.ToArray()));
+                        numberChar.Clear();
+
+                        var operation = GetCalculationPairAndWeight('*');
+                        operationOrder.Enqueue(
+                            new OperationPair(number,
+                                          operation.weight,
+                                          operation.calculationPair));
                     }
-                    else
-                    {
-                        throw new FormatException();
-                    }
+
+                    operationOrder.Enqueue(new OperationParentheses(false, true));
                 }
-                else if (character.Equals('('))
+                else if (calculations[i].Equals('('))
                 {
                     //Check if we have right parentheses in the string for the left parentheses to close.
                     //Also check if there is a number waiting to be passed.
                     if (parenthesesNum > 0 && numberChar.Count != 0)
                     {
-                        
-                        firstDot = true;
 
-                        //Queue the number in numberChar
-                        string numberString = new string(numberChar.ToArray());
-                        operationOrder.Enqueue(new OperationNum(double.Parse(numberString)));
+                        firstDecimal = true;
+                        negativeNum = false;
+                        operationNext = false;
+
+                        //Queue the number that is in numberChar
+                        //string numberString = new string(numberChar.ToArray());
+                        operationOrder.Enqueue(
+                            new OperationNum(
+                                double.Parse(new string(numberChar.ToArray()))));
                         numberChar.Clear();
 
                         //Check if we are at the end of the string or not
@@ -115,59 +142,68 @@ namespace StringMathCalculator
                             for (i2 = i; i2 > 0 && parenthesesNum > 0; i2--)
                             {
                                 parenthesesNum--;
-                                var leftCharacter = calcNoSpaces[i2 - 1];
-                                var isNum = int.TryParse(leftCharacter.ToString(), out _);
+                                char leftCharacter = calculations[i2 - 1];
 
-                                if (isNum || leftCharacter.Equals(')'))
-                                {
-                                    var pairAndWeight = GetCalculationPairAndWeight('*');
-                                    OperationParentheses operationParentheses = new OperationParentheses(true, false)
-                                    {
-                                        calcPair = pairAndWeight.calculationPair,
-                                        Weight = pairAndWeight.weight
-                                    };
-                                    operationOrder.Enqueue(operationParentheses);
-
-                                    break;
-                                }
-                                else if (regex.IsMatch(leftCharacter.ToString()))
-                                {
-                                    var pairAndWeight = GetCalculationPairAndWeight(leftCharacter);
-                                    OperationParentheses operationParentheses = new OperationParentheses(true, false)
-                                    {
-                                        calcPair = pairAndWeight.calculationPair,
-                                        Weight = pairAndWeight.weight
-                                    };
-                                    operationOrder.Enqueue(operationParentheses);
-
-                                    i = i2 - 1;
-
-                                    break;
-                                }
-                                //If there are no numbers or operations left of the left parentheses then check
-                                //if the character left is a left parentheses. If they are not, throw an exception.
-                                else if (leftCharacter.Equals('('))
+                                if (leftCharacter.Equals('('))
                                 {
                                     var operationParentheses = new OperationParentheses(true, false);
                                     operationOrder.Enqueue(operationParentheses);
                                 }
+                                //Check if there is a number, right parentheses or operation left of the left parentheses
                                 else
                                 {
-                                    throw new FormatException();
+                                    bool isLeftNum = int.TryParse(leftCharacter.ToString(), out _);
+
+                                    if (isLeftNum || leftCharacter.Equals(')'))
+                                    {
+                                        var pairAndWeight = GetCalculationPairAndWeight('*');
+                                        OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                        {
+                                            calcPair = pairAndWeight.calculationPair,
+                                            Weight = pairAndWeight.weight
+                                        };
+                                        operationOrder.Enqueue(operationParentheses);
+
+                                        break;
+                                    }
+                                    else if (leftCharacter.Equals('('))
+                                    {
+                                        var operationParentheses = new OperationParentheses(true, false);
+                                        operationOrder.Enqueue(operationParentheses);
+                                    }
+                                    else
+                                    {
+                                        var pairAndWeight = GetCalculationPairAndWeight(leftCharacter);
+                                        OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                        {
+                                            calcPair = pairAndWeight.calculationPair,
+                                            Weight = pairAndWeight.weight
+                                        };
+                                        operationOrder.Enqueue(operationParentheses);
+
+                                        if(leftCharacter.Equals('g'))
+                                        {
+                                            i2 -= 2;
+                                        }
+
+                                        i = i2 - 1;
+
+                                        break;
+                                    }
                                 }
                             }
 
                             //Check if the end of the string had closed all parentheses.
-                            if(i2 == 0 && parenthesesNum == 1)
+                            if (i2 == 0 && parenthesesNum == 1)
                             {
                                 var operationParentheses = new OperationParentheses(true, false);
                                 operationOrder.Enqueue(operationParentheses);
 
                                 i = 0;
                             }
-                            else if(i2 == 0 && parenthesesNum > 0)
+                            else if (i2 == 0 && parenthesesNum > 0)
                             {
-                                throw new FormatException();
+                                throw new FormatException("Parentheses not all closed at start of string.");
                             }
                         }
                         else
@@ -178,97 +214,97 @@ namespace StringMathCalculator
                     }
                     else
                     {
-                        throw new FormatException();
-                    }
-                }
-                else
-                {
-                    //Check if the character is a number
-                    var isNum = int.TryParse(character.ToString(), out _);
-
-                    //If the character is a number add it to the numberChar queue
-                    if (isNum)
-                    {
-                        numberChar.Push(character);
-                        //Check if we are on the end of the operations string
-                        //If we are, add a SingleNum to the operation order with the number
-                        if(i == 0)
+                        if(numberChar.Count == 0)
                         {
-                            string numberString = new string(numberChar.ToArray());
-                            operationOrder.Enqueue(new OperationNum(double.Parse(numberString)));
-                        }
-                    }
-                    else
-                    {
-                        //The current number in numberChar will be saved
-                        //Reset the check for more than one . in a number
-                        firstDot = true;
-                        double currentNumber = 0;
-
-                        //If there is a number in numberChar, then save the number
-                        if (numberChar.Count > 0)
-                        {
-                            //Check if the number is negative
-                            if(character.Equals('-'))
-                            {
-                                //Check if we are at the end of the string
-                                //If we are not, check for a new operation or right parentheses after the '-' character
-                                if(i > 0)
-                                {
-                                    char nextCharacter = calcNoSpaces[i - 1];
-                                    isNum = int.TryParse(nextCharacter.ToString(), out _);
-
-                                    if(!isNum && !nextCharacter.Equals(')'))
-                                    {
-                                        numberChar.Push(character);
-                                        character = calcNoSpaces[--i];
-                                    }
-                                }
-                                else
-                                {
-                                    numberChar.Push(character);
-                                }
-                            }
-                            string numberString = new string(numberChar.ToArray());
-                            currentNumber = double.Parse(numberString);
-                            numberChar.Clear();
-                        }
-
-                        //Check if the non number character is a math operator
-                        //If it is, add it to the operation queue
-                        //Else throw an exception
-                        if(regex.IsMatch(character.ToString()))
-                        {
-                            //Check if the next characters after g spell log
-                            if(character.Equals('g'))
-                            {
-                                if(i > 2)
-                                {
-                                    if(!calcNoSpaces[i - 1].Equals('o') || !calcNoSpaces[i - 2].Equals('l'))
-                                    {
-                                        throw new FormatException();
-                                    }
-                                    else
-                                    {
-                                        i -= 2;
-                                    }
-                                }
-                                else
-                                {
-                                    throw new FormatException();
-                                }
-                            }
-                            var  calculationPairAndWeight = GetCalculationPairAndWeight(character);
-                            operationOrder.Enqueue(
-                                new OperationPair(currentNumber,
-                                                  calculationPairAndWeight.weight,
-                                                  calculationPairAndWeight.calculationPair));
+                            throw new FormatException("Operation found at the end of parentheses");
                         }
                         else
                         {
-                            throw new FormatException();
+                            throw new FormatException("Left parentheses found without enclosing right parentheses");
                         }
                     }
+                }
+                else if (calculations[i].Equals('.'))
+                {
+                    if(!firstDecimal)
+                    {
+                        throw new FormatException("Found more than one decimal point in a single number.");
+                    }
+
+                    if(numberChar.Count != 0)
+                    {
+                        if(negativeNum && numberChar.Count == 1)
+                        {
+                            numberChar.Push('0');
+                        }
+                        numberChar.Push(calculations[i]);
+                        firstDecimal = false;
+                    }
+                    else
+                    {
+                        numberChar.Push('0');
+                        numberChar.Push(calculations[i]);
+                        firstDecimal = false;
+                    }
+                }
+                else if(!operationNext)
+                {
+                    throw new FormatException("Operation found next to another operation.");
+                }
+                else
+                {
+                    if(calculations[i].Equals('-'))
+                    {
+                        if(i == 0)
+                        {
+                            numberChar.Push(calculations[i]);
+
+                            operationOrder.Enqueue(
+                                new OperationNum(
+                                    double.Parse(new string(numberChar.ToArray()))));
+
+                            continue;
+                        }
+                        else
+                        {
+                            char leftCharacter = calculations[i - 1];
+
+                            bool isLeftNum = int.TryParse(leftCharacter.ToString(), out _);
+
+                            if(!isLeftNum  
+                                && !leftCharacter.Equals(')'))
+                            {
+                                negativeNum = true;
+                                numberChar.Push(calculations[i]);
+
+                                continue;
+                            }
+                        }
+                    }
+
+                    if(i == 0)
+                    {
+                        throw new FormatException("Operation found at the beginning of the string");
+                    }
+
+                    negativeNum = false;
+                    operationNext = false;
+                    firstDecimal = true;
+
+                    double number = double.Parse(new string(numberChar.ToArray()));
+                    numberChar.Clear();
+
+                    var operation = GetCalculationPairAndWeight(calculations[i]);
+                    operationOrder.Enqueue(
+                        new OperationPair(number,
+                                      operation.weight,
+                                      operation.calculationPair));
+
+                    if (calculations[i].Equals('g'))
+                    {
+                        i -= 2;
+                    }
+
                 }
             }
 
@@ -448,6 +484,15 @@ namespace StringMathCalculator
             return originCalculator;
         }
 
+        private OperationPair GetOperationPair(int weight, double number, CalculationPair calculationPair, bool operationNext)
+        {
+            if(!operationNext)
+            {
+                throw new FormatException("Operation found next to another operation.");
+            }
+
+            return new OperationPair(number, weight, calculationPair);
+        }
 
         //Return the opeartion Delegate and the weight for the character operation
         //If the character isn't listed throw a FormatException
