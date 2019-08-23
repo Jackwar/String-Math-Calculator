@@ -10,10 +10,10 @@ A .net framework that conforms to .net standard 2.0
 
 https://dotnet.microsoft.com/
 
-Windows -
+Windows -\n
 .net framework or .net core
 
-Windows, Linux, Mac -
+Windows, Linux, Mac -\n
 .net core
 
 ### Installation
