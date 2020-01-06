@@ -13,11 +13,6 @@ namespace StringMathCalculator
         ///<value>Regex for checking a string with calculations for illegal values.</value>
         private readonly Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()_]");
 
-        /*private bool firstDecimal = true;
-        private int parenthesesNum = 0;
-        private bool operationNext = true;
-        private bool negativeNum = false;*/
-
         /*
           
             Methods for calculations. 
@@ -47,8 +42,6 @@ namespace StringMathCalculator
             4. Add the chosen character to the legalCharacter regex.
             5. Chain a new Replace onto calculations in the method CalculatorCalculation (The first line in the method)
                 that replaces the multiple characters with the chosen character
-            add a new method that takes two doubles as parameters, then use any unused
-            character to replace the calculation name and add it to 
            
         */
         private double Exponent(double x, double y)
@@ -351,7 +344,11 @@ namespace StringMathCalculator
             calculationHelper.OperationOrder.Enqueue(new OperationParentheses(Parentheses.RIGHT));
         }
 
-        //Reorder the operations in the opertionsOrder Queue by weight of operation
+        /// <summary>
+        /// Reorder the operations in the opertionsOrder Queue by weight of operation
+        /// </summary>
+        /// <param name="operationOrder">Queue of operations</param>
+        /// <returns>CalculatorCalculation ready for calculations to be executed</returns>
         private CalculatorCalculation OrderCalculations(Queue<object> operationOrder)
         {
             //The originCalculator is the top of the binary tree structure for the operations order
@@ -524,8 +521,14 @@ namespace StringMathCalculator
             return originCalculator;
         }
 
-        //Return the opeartion Delegate and the weight for the character operation
-        //If the character isn't listed throw a FormatException
+        /// <summary>
+        /// Return the operation Delegate and the weight for the character operation
+        /// </summary>
+        /// <param name="operation">Operation character</param>
+        /// <returns>Calculation pair and operation weight</returns>
+        /// <exception cref="System.FormatException">
+        /// Thrown when no character matches the character operation
+        /// </exception>
         private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
         {
             switch(operation)
