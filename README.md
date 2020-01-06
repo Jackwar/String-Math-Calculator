@@ -50,10 +50,16 @@ Console.WriteLine(calculator.Calculation("4 ^ 2").Calculate());
 
 Log, 4 by the log of 2.
 ```
-Console.WriteLine(calculator.Calculation("4 ^ 2").Calculate());
+Console.WriteLine(calculator.Calculation("4 log 2").Calculate());
 ```
 
 Parentheses can be used
 ```
 Console.WriteLine(calculator.Calculation("(3 + 4) * 2").Calculate());
+```
+
+The times operator can be omitted if a number is next to a parentheses 
+```
+Console.WriteLine(calculator.Calculation("(3 + 4) 2").Calculate());
+Console.WriteLine(calculator.Calculation("2 (3 + 4)").Calculate());
 ```
