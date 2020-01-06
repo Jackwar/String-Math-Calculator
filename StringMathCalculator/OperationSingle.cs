@@ -1,10 +1,8 @@
 ﻿namespace StringMathCalculator.Calculations
 {
-    /*
-    * 
-    * A stored Operation that requires a single number to calculate.
-    * 
-    */
+    /// <summary>
+    /// A stored Operation that requires a single number to calculate.
+    /// </summary>
     class OperationSingle : OperationCalc
     {
         public int Weight { get; private set; }

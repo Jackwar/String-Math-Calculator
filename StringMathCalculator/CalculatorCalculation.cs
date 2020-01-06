@@ -1,17 +1,12 @@
 ﻿namespace StringMathCalculator.Calculations
 {
-    /*
-     * 
-     * Holds operations in a binary tree, weighted by orders of operations order.
-     * The first operation added is always to the right, usually as a CalculatorNumber
-     * unless parentheses are used.
-     * A single operation can be held.
-     * 
-     */
-
     public delegate double CalculationPair(double x, double y);
     public delegate double CalculationSingle(double x);
 
+    ///<summary><para>Holds operations in a binary tree, weighted by orders of operations order.</para>
+    ///<para>The first operation added is always to the right, usually as a CalculatorNumber
+    ///unless parentheses are used.</para>
+    ///</summary>
     public class CalculatorCalculation : ICalculatorItem
     {
 

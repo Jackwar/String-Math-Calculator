@@ -1,16 +1,23 @@
 ﻿namespace StringMathCalculator.Calculations
 {
+    enum Parentheses
+    {
+        LEFT,
+        RIGHT
+    }
+    /// <summary>
+    /// Parentheses to hold a CalculationPair to complete the operations within
+    /// before leaving the parentheses.
+    /// </summary>
     class OperationParentheses
     {
-        public bool LeftParentheses { get; private set; }
-        public bool RightParentheses { get; private set; }
+        public Parentheses Parentheses { get; }
         public int Weight { get; set; }
         public CalculationPair calcPair { get; set; }
 
-        public OperationParentheses(bool leftParentheses, bool rightParentheses)
+        public OperationParentheses(Parentheses parentheses)
         {
-            LeftParentheses = leftParentheses;
-            RightParentheses = rightParentheses;
+            Parentheses = parentheses;
         }
     }
 }

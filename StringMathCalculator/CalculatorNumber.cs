@@ -1,11 +1,9 @@
 ﻿namespace StringMathCalculator.Calculations
 {
+    ///<summary>
+    ///A single number to be held in a CalculatorCalculation's binary tree
+    ///</summary>
 
-    /*
-     * 
-     * A single number to be held in a CalculatorCalculation's binary tree
-     * 
-     */
     public class CalculatorNumber : ICalculatorItem
     {
         private readonly double _num;

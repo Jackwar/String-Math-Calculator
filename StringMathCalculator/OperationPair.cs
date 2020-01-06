@@ -1,11 +1,10 @@
 ﻿namespace StringMathCalculator.Calculations
 {
 
-    /*
-     * 
-     * A stored Operation that requires a pair of numbers to calculate
-     * 
-     */
+    /// <summary>
+    /// A stored Operation that requires a pair of numbers to calculate.
+    /// </summary>
+    /// 
     class OperationPair : OperationCalc
     {
         public int Weight { get; private set; }

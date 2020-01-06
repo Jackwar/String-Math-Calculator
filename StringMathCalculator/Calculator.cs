@@ -8,10 +8,44 @@ namespace StringMathCalculator
 
     public class Calculator
     {
-        //private Regex regex = new Regex(@"[+-\\*/^rg]", RegexOptions.Compiled);
-        private Regex removeSpaces = new Regex(@"\t |\n |\r |\s", RegexOptions.Compiled);
-        private Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()]", RegexOptions.Compiled);
+        ///<value>Regex for removing spaces from a string.</value>
+        private readonly Regex removeSpaces = new Regex(@"\t |\n |\r |\s");
+        ///<value>Regex for checking a string with calculations for illegal values.</value>
+        private readonly Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()_]");
 
+        /*
+          
+            Methods for calculations. 
+            
+            How to add a calculation operation with a single character (example, '*')
+
+            1. Choose a character for the operation.
+            2. Add a new method that that takes two doubles as parameters and returns a double.
+            3. Add a new switch case to the method GetCalculationPairAndWeight for the chosen character along with 
+                its weight compared to other operations. The higher the weight is
+                the sooner it will be calculated (example, Times with a weight of 1 will 
+                always be calculated before Add with a weight of 0). If calculation weights are equal
+                the left operation is always calculated first.
+
+            4. Add the chosen character to the legalCharacter regex.
+
+            How to add a calculation with multiple characters (example, "log")
+
+            1. Choose a single character to replace the multiple characters (example, "log" is replaced by '_')
+            2. Add a new operation method that takes two doubles as parameters and returns a double.
+            3. Add a new switch case to the method GetCalculationPairAndWeight for the chosen character along with 
+                its weight compared to other operations. The higher the weight is
+                the sooner it will be calculated (example, Times with a weight of 1 will 
+                always be calculated before Add with a weight of 0). If calculation weights are equal
+                the left operation is always calculated first.
+
+            4. Add the chosen character to the legalCharacter regex.
+            5. Chain a new Replace onto calculations in the method CalculatorCalculation (The first line in the method)
+                that replaces the multiple characters with the chosen character
+            add a new method that takes two doubles as parameters, then use any unused
+            character to replace the calculation name and add it to 
+           
+        */
         private double Exponent(double x, double y)
         {
             return Math.Pow(x, y);
@@ -46,20 +80,24 @@ namespace StringMathCalculator
         {
             return Math.Log(x, y);
         }
-
-        //The main method for calculations
-        //Reads the calculation string from right to left and parses the characters to doubles and operations 
-        //if the string provided has illegal characters, or too many decimals in a number throw a FormatException
-
+        ///<summary>
+        ///<para>The main method for calculations.</para>
+        ///<para>Reads <paramref name="calculations"/> from right to left and parses the characters to doubles and operations.</para>
+        ///</summary>
+        ///<returns>
+        ///The calculations ready to be calculated in order.
+        ///</returns>
+        ///<exception cref="System.FormatException">
+        ///Thrown when a string provided has illegal characters, too many parentheses or too many decimals in a number.
+        ///</exception>
+        ///<param name="calculations">A string with math calculations.</param>
         public CalculatorCalculation Calculation(string calculations)
         {
 
-            //calculations = calculations.Trim();
+            calculations = removeSpaces.Replace(calculations, "").ToLower()
+                .Replace("log", "_");
 
-            calculations = removeSpaces.Replace(calculations, "").ToLower();
-            string logRemoved = calculations.Replace("log", "");
-
-            if(legalCharacters.IsMatch(logRemoved))
+            if(legalCharacters.IsMatch(calculations))
             {
                 throw new FormatException("Illegal characters in calculation.");
             }
@@ -107,14 +145,14 @@ namespace StringMathCalculator
                         double number = double.Parse(new string(numberChar.ToArray()));
                         numberChar.Clear();
 
-                        var operation = GetCalculationPairAndWeight('*');
+                        var (calculationPair, weight) = GetCalculationPairAndWeight('*');
                         operationOrder.Enqueue(
                             new OperationPair(number,
-                                          operation.weight,
-                                          operation.calculationPair));
+                                          weight,
+                                          calculationPair));
                     }
 
-                    operationOrder.Enqueue(new OperationParentheses(false, true));
+                    operationOrder.Enqueue(new OperationParentheses(Parentheses.RIGHT));
                 }
                 else if (calculations[i].Equals('('))
                 {
@@ -146,7 +184,7 @@ namespace StringMathCalculator
 
                                 if (leftCharacter.Equals('('))
                                 {
-                                    var operationParentheses = new OperationParentheses(true, false);
+                                    var operationParentheses = new OperationParentheses(Parentheses.LEFT);
                                     operationOrder.Enqueue(operationParentheses);
                                 }
                                 //Check if there is a number, right parentheses or operation left of the left parentheses
@@ -156,11 +194,11 @@ namespace StringMathCalculator
 
                                     if (isLeftNum || leftCharacter.Equals(')'))
                                     {
-                                        var pairAndWeight = GetCalculationPairAndWeight('*');
-                                        OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                        var (calculationPair, weight) = GetCalculationPairAndWeight('*');
+                                        OperationParentheses operationParentheses = new OperationParentheses(Parentheses.LEFT)
                                         {
-                                            calcPair = pairAndWeight.calculationPair,
-                                            Weight = pairAndWeight.weight
+                                            calcPair = calculationPair,
+                                            Weight = weight
                                         };
                                         operationOrder.Enqueue(operationParentheses);
 
@@ -168,16 +206,16 @@ namespace StringMathCalculator
                                     }
                                     else if (leftCharacter.Equals('('))
                                     {
-                                        var operationParentheses = new OperationParentheses(true, false);
+                                        var operationParentheses = new OperationParentheses(Parentheses.LEFT);
                                         operationOrder.Enqueue(operationParentheses);
                                     }
                                     else
                                     {
-                                        var pairAndWeight = GetCalculationPairAndWeight(leftCharacter);
-                                        OperationParentheses operationParentheses = new OperationParentheses(true, false)
+                                        var (calculationPair, weight) = GetCalculationPairAndWeight(leftCharacter);
+                                        OperationParentheses operationParentheses = new OperationParentheses(Parentheses.LEFT)
                                         {
-                                            calcPair = pairAndWeight.calculationPair,
-                                            Weight = pairAndWeight.weight
+                                            calcPair = calculationPair,
+                                            Weight = weight
                                         };
                                         operationOrder.Enqueue(operationParentheses);
 
@@ -196,7 +234,7 @@ namespace StringMathCalculator
                             //Check if the end of the string had closed all parentheses.
                             if (i2 == 0 && parenthesesNum == 1)
                             {
-                                var operationParentheses = new OperationParentheses(true, false);
+                                var operationParentheses = new OperationParentheses(Parentheses.LEFT);
                                 operationOrder.Enqueue(operationParentheses);
 
                                 i = 0;
@@ -208,7 +246,7 @@ namespace StringMathCalculator
                         }
                         else
                         {
-                            var operationParentheses = new OperationParentheses(true, false);
+                            var operationParentheses = new OperationParentheses(Parentheses.LEFT);
                             operationOrder.Enqueue(operationParentheses);
                         }
                     }
@@ -294,17 +332,11 @@ namespace StringMathCalculator
                     double number = double.Parse(new string(numberChar.ToArray()));
                     numberChar.Clear();
 
-                    var operation = GetCalculationPairAndWeight(calculations[i]);
+                    var (calculationPair, weight) = GetCalculationPairAndWeight(calculations[i]);
                     operationOrder.Enqueue(
                         new OperationPair(number,
-                                      operation.weight,
-                                      operation.calculationPair));
-
-                    if (calculations[i].Equals('g'))
-                    {
-                        i -= 2;
-                    }
-
+                                      weight,
+                                      calculationPair));
                 }
             }
 
@@ -349,7 +381,7 @@ namespace StringMathCalculator
                     var operationParentheses = (OperationParentheses)operation;
 
                     //Check if operation is a right parentheses
-                    if(operationParentheses.RightParentheses)
+                    if(operationParentheses.Parentheses == Parentheses.RIGHT)
                     {
                         //Set the parentheses calculation with a weight -1 so its operation order is never checked
                         currentCalculator.Weight = -1;
@@ -484,16 +516,6 @@ namespace StringMathCalculator
             return originCalculator;
         }
 
-        private OperationPair GetOperationPair(int weight, double number, CalculationPair calculationPair, bool operationNext)
-        {
-            if(!operationNext)
-            {
-                throw new FormatException("Operation found next to another operation.");
-            }
-
-            return new OperationPair(number, weight, calculationPair);
-        }
-
         //Return the opeartion Delegate and the weight for the character operation
         //If the character isn't listed throw a FormatException
         private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
@@ -512,7 +534,8 @@ namespace StringMathCalculator
                     return (Exponent, 2);
                 case 'r':
                     return (Root, 2);
-                case 'g':
+                //Log case
+                case '_':
                     return (Log, 2);
                 default:
                     throw new FormatException();
