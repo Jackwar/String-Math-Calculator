@@ -13,6 +13,11 @@ namespace StringMathCalculator
         ///<value>Regex for checking a string with calculations for illegal values.</value>
         private readonly Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()_]");
 
+        /*private bool firstDecimal = true;
+        private int parenthesesNum = 0;
+        private bool operationNext = true;
+        private bool negativeNum = false;*/
+
         /*
           
             Methods for calculations. 
@@ -42,6 +47,8 @@ namespace StringMathCalculator
             4. Add the chosen character to the legalCharacter regex.
             5. Chain a new Replace onto calculations in the method CalculatorCalculation (The first line in the method)
                 that replaces the multiple characters with the chosen character
+            add a new method that takes two doubles as parameters, then use any unused
+            character to replace the calculation name and add it to 
            
         */
         private double Exponent(double x, double y)
