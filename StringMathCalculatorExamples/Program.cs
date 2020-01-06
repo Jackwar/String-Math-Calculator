@@ -30,7 +30,7 @@ namespace CalculatorTesting
             //Parentheses can be used
             Console.WriteLine(calculator.Calculation("(3 + 4) * 2").Calculate());
 
-            //The times operator can be ommited when next to a parentheses
+            //The times operator can be omitted when next to a parentheses
             Console.WriteLine(calculator.Calculation("(3 + 4) 2").Calculate());
 
             //This works in both directions
