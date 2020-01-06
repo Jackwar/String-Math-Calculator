@@ -1,7 +1,12 @@
 ﻿namespace StringMathCalculator.Calculations
 {
+    /// <summary>
+    /// Delegate for pair operations.
+    /// </summary>
+    /// <param name="x">Left number for operation.</param>
+    /// <param name="y">Right number for operation.</param>
+    /// <returns>Sum of operation.</returns>
     public delegate double CalculationPair(double x, double y);
-    public delegate double CalculationSingle(double x);
 
     ///<summary><para>Holds operations in a binary tree, weighted by orders of operations order.</para>
     ///<para>The first operation added is always to the right, usually as a CalculatorNumber
@@ -18,10 +23,8 @@
         public ICalculatorItem Top { get; set; }
         ///<value>Delegate that performs the passed operation for a pair of numbers.</value>
         public CalculationPair PairCalc { get; set; }
-        public CalculationSingle SingleCalc { get; set; }
         ///<value>The weight of the operations for this calculation, higher weight is executed sooner.</value>
         public int Weight { get; set; }
-        public bool SingleOperation { get; set; }
 
         public CalculatorCalculation(CalculationPair calculation, int weight)
         {
@@ -33,29 +36,19 @@
 
         public double Calculate()
         {
-            if (PairCalc != null)
+            if (Left != null && Right != null)
             {
-                if (Left != null && Right != null)
-                {
-                    return PairCalc(Left.Calculate(), Right.Calculate());
-                }
-                else if (Right != null)
-                {
-                    return Right.Calculate();
-                }
-                else
-                {
-                    return Left.Calculate();
-                }
+                return PairCalc(Left.Calculate(), Right.Calculate());
             }
-            else if (SingleCalc != null)
-            {
-                return SingleCalc(Right.Calculate());
-            }
-            else
+            else if (Right != null)
             {
                 return Right.Calculate();
             }
+            else
+            {
+                return Left.Calculate();
+            }
+
         }
 
     }
