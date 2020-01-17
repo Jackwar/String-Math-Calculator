@@ -81,3 +81,13 @@ Console.WriteLine(calculator.Calculation("1 addtwice 3").Calculate());
 ### Weight
 
 The weight of the operation will dictate which operation is calculated first. For example + has a weight of 1000 while * has a weight of 1001, meaning times will always be calculated before adding is considered. The highest weight is always calculated first unless parentheses are involved. The most left operation is calculated first if weights are equal.
+
+#### Weights for existing operations
+
+\+ 1000
+\- 1000
+\/ 1001
+\* 1001
+\^ 1002
+\r 1002
+\log 1002
