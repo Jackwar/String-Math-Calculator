@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using StringMathCalculator.Calculations;
 
@@ -9,41 +10,176 @@ namespace StringMathCalculator
     public class Calculator
     {
         ///<value>Regex for removing spaces from a string.</value>
-        private readonly Regex removeSpaces = new Regex(@"\t |\n |\r |\s");
-        ///<value>Regex for checking a string with calculations for illegal values.</value>
-        private readonly Regex legalCharacters = new Regex(@"[^0-9+-/*\^r()_]");
+        private static readonly Regex removeSpaces = new Regex(@"\t |\n |\r |\s", RegexOptions.Compiled);
+        /// <value>List of reserved characters that cannot be assigned to an operation.</value>
+        private static readonly List<char> reservedChars = new List<char>()
+        {
+            '(', ')', '.'
+        };
+        ///<value>StringBuilder holding the legal characters that can be in a calculation string.</value>
+        private readonly StringBuilder legalCharacters;
 
-        /*
+        private readonly Dictionary<char, CalculatorOperation> singleCharOperations;
+        private readonly Dictionary<char, string> wordReplacements;
+
+        public Calculator()
+        {
+            legalCharacters = new StringBuilder();
+            legalCharacters.Append(@"[^0-9()");
+
+            singleCharOperations = new Dictionary<char, CalculatorOperation>()
+            {
+                { '^', new CalculatorOperation(Exponent, 2 ) },
+                { '*', new CalculatorOperation(Times, 1) },
+                { '+', new CalculatorOperation(Add, 0) },
+                { '-', new CalculatorOperation(Minus, 0) },
+                { '/', new CalculatorOperation(Divide, 1) },
+                { 'r', new CalculatorOperation(Root, 2) },
+                { '_', new CalculatorOperation(Log, 2) }
+            };
+
+            foreach(var entry in singleCharOperations)
+            {
+                if(entry.Value.RegexCharacter != null)
+                {
+                    legalCharacters.Append(entry.Value.RegexCharacter);
+                }
+                else
+                {
+                    legalCharacters.Append(entry.Key);
+                }
+            }
+
+            wordReplacements = new Dictionary<char, string>()
+            {
+                { '_', "log" }
+            };
+        }
+
+        /// <summary>
+        /// Add a custom operation for the sum of two numbers.
+        /// </summary>
+        /// <param name="calculation">The method that takes two doubles and returns a double.</param>
+        /// <param name="weight">The weight of the operation.</param>
+        /// <param name="character">The character tied to the operation.</param>
+        /// <exception cref="ArgumentException">
+        /// Throws when a reserved charcter of '(', ')' or '.' is used, if the character is already in use or the character is a number.
+        /// </exception>
+        public void AddOperation(CalculationPair calculation, int weight, char character)
+        {
+            if (int.TryParse(character.ToString(), out _))
+            {
+                throw new ArgumentException("Character cannot be a number.");
+            }
+            if (reservedChars.Contains(character))
+            {
+                throw new ArgumentException("Reserved character, please avoid '(', ')' and '.'");
+            }
+            if (!singleCharOperations.ContainsKey(character))
+            {
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+                if (character != '\\')
+                {
+                    legalCharacters.Append(character);
+                }
+                else
+                {
+                    legalCharacters.Append(@"\\");
+                }
+            }
+            else if(WordReplacementsContains(character))
+            {
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+            }
+            else
+            {
+                throw new ArgumentException("Character is already in use for another operation.");
+            }
+        }
+
+        /// <summary>
+        /// Add a custom operation for the sum of two numbers. 
+        /// <para>Takes a regex escape string if the character must be escaped to be in a regex.</para>
+        /// </summary>
+        /// <param name="calculation">The method that takes two doubles and returns a double.</param>
+        /// <param name="weight">The weight of the operation.</param>
+        /// <param name="character">The word tied to the operation. Can't contain spaces.</param>
+        /// <exception cref="ArgumentException">
+        /// Throws if the word is already in use, has spaces or is just a number.
+        /// </exception>
+        public void AddOperation(CalculationPair calculation, int weight, string word)
+        {
+            if(int.TryParse(word, out _))
+            {
+                throw new ArgumentException("Word can contain numbers, but must not be just a number.");
+            }
+            if(removeSpaces.IsMatch(word))
+            {
+                throw new ArgumentException("Word cannot have spaces.");
+            }
+            if (!wordReplacements.ContainsValue(word))
+            {
+                var character = AddUnusedCharacter(word);
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+                legalCharacters.Append(character);
+            }
+            else
+            {
+                throw new ArgumentException("Word is already in use for another operation.");
+            }
+        }
+        /// <summary>
+        /// Checks if a character exists in the wordReplacements Dictionary.
+        /// </summary>
+        /// <param name="character">Character to be checked for.</param>
+        /// <returns>Bool for if character exists in wordReplacements</returns>
+        private bool WordReplacementsContains(char character)
+        {
+            if (wordReplacements.ContainsKey(character))
+            {
+                string word = wordReplacements[character];
+                CalculatorOperation operation = singleCharOperations[character];
+
+                wordReplacements.Remove(character);
+                singleCharOperations.Remove(character);
+                var newChar = AddUnusedCharacter(word, character + 1);
+
+                singleCharOperations.Add(newChar, operation);
+                return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Find an unused character, starting from unicode 161.
+        /// </summary>
+        /// <param name="word">Word to be added to wordReplacements Dictionary.</param>
+        /// <param name="startPoint">Unicode starting point, default is 161.</param>
+        /// <returns>The found unused character.</returns>
+        private char AddUnusedCharacter(string word, int startPoint = 161)
+        {
+            char replacement = (char)startPoint;
+
+            if(singleCharOperations.ContainsKey(replacement))
+            {
+                for (int i = 0; i < 1023; i++)
+                {
+                    replacement++;
+                    if(!singleCharOperations.ContainsKey(replacement))
+                    {
+                        break;
+                    }
+                }
+            }
+
+            legalCharacters.Append(replacement);
+            wordReplacements.Add(replacement, word);
+            return replacement;
+
+        }
           
-            Methods for calculations. 
-            
-            How to add a calculation operation with a single character (example, '*')
-
-            1. Choose a character for the operation.
-            2. Add a new method that that takes two doubles as parameters and returns a double.
-            3. Add a new switch case to the method GetCalculationPairAndWeight for the chosen character along with 
-                its weight compared to other operations. The higher the weight is
-                the sooner it will be calculated (example, Times with a weight of 1 will 
-                always be calculated before Add with a weight of 0). If calculation weights are equal
-                the left operation is always calculated first.
-
-            4. Add the chosen character to the legalCharacter regex.
-
-            How to add a calculation with multiple characters (example, "log")
-
-            1. Choose a single character to replace the multiple characters (example, "log" is replaced by '_')
-            2. Add a new operation method that takes two doubles as parameters and returns a double.
-            3. Add a new switch case to the method GetCalculationPairAndWeight for the chosen character along with 
-                its weight compared to other operations. The higher the weight is
-                the sooner it will be calculated (example, Times with a weight of 1 will 
-                always be calculated before Add with a weight of 0). If calculation weights are equal
-                the left operation is always calculated first.
-
-            4. Add the chosen character to the legalCharacter regex.
-            5. Chain a new Replace onto calculations in the method CalculatorCalculation (The first line in the method)
-                that replaces the multiple characters with the chosen character
-           
-        */
+        //Default methods for calculations. 
+             
         private double Exponent(double x, double y)
         {
             return Math.Pow(x, y);
@@ -78,6 +214,7 @@ namespace StringMathCalculator
         {
             return Math.Log(x, y);
         }
+
         ///<summary>
         ///<para>The main method for calculations.</para>
         ///<para>Reads <paramref name="calculations"/> from right to left and parses the characters to doubles and operations.</para>
@@ -89,13 +226,19 @@ namespace StringMathCalculator
         ///Thrown when a string provided has illegal characters, too many parentheses or too many decimals in a number.
         ///</exception>
         ///<param name="calculations">A string with math calculations.</param>
+        ///
         public CalculatorCalculation Calculation(string calculations)
         {
+            //StringBuilder builder = new StringBuilder(calculations.ToLower());
+            //builder.Replace(removeSpaces, string.Empty);
+            calculations = removeSpaces.Replace(calculations, string.Empty);
 
-            calculations = removeSpaces.Replace(calculations, "").ToLower()
-                .Replace("log", "_");
+            foreach(var wordReplacement in wordReplacements)
+            {
+                calculations = calculations.Replace(wordReplacement.Value, wordReplacement.Key.ToString());
+            }
 
-            if(legalCharacters.IsMatch(calculations))
+            if(Regex.IsMatch(calculations, legalCharacters.ToString() + "]"))
             {
                 throw new FormatException("Illegal characters in calculation.");
             }
@@ -176,11 +319,14 @@ namespace StringMathCalculator
 
                     calculationHelper.Reset();
 
-                    var (calculationPair, weight) = GetCalculationPairAndWeight(calculations[i]);
+                    //var (calculationPair, weight) = GetCalculationPairAndWeight(calculations[i]);
+
+                    var calculatorOperation = singleCharOperations[calculations[i]];
+
                     calculationHelper.OperationOrder.Enqueue(
                         new OperationPair(number,
-                                      weight,
-                                      calculationPair));
+                                      calculatorOperation.Weight,
+                                      calculatorOperation.CalculationPair));
                 }
             }
 
@@ -247,11 +393,11 @@ namespace StringMathCalculator
 
                             if (isLeftNum || leftCharacter.Equals(')'))
                             {
-                                var (calculationPair, weight) = GetCalculationPairAndWeight('*');
+                                var calculationOperation = singleCharOperations['*'];
                                 OperationParentheses operationParentheses = new OperationParentheses(Parentheses.LEFT)
                                 {
-                                    calcPair = calculationPair,
-                                    Weight = weight
+                                    calcPair = calculationOperation.CalculationPair,
+                                    Weight = calculationOperation.Weight
                                 };
                                 calculationHelper.OperationOrder.Enqueue(operationParentheses);
 
@@ -264,11 +410,11 @@ namespace StringMathCalculator
                             }
                             else
                             {
-                                var (calculationPair, weight) = GetCalculationPairAndWeight(leftCharacter);
+                                var calculationOperation = singleCharOperations[leftCharacter];
                                 OperationParentheses operationParentheses = new OperationParentheses(Parentheses.LEFT)
                                 {
-                                    calcPair = calculationPair,
-                                    Weight = weight
+                                    calcPair = calculationOperation.CalculationPair,
+                                    Weight = calculationOperation.Weight
                                 };
                                 calculationHelper.OperationOrder.Enqueue(operationParentheses);
 
@@ -334,11 +480,12 @@ namespace StringMathCalculator
 
                 calculationHelper.Reset();
 
-                var (calculationPair, weight) = GetCalculationPairAndWeight('*');
+                //var (calculationPair, weight) = GetCalculationPairAndWeight('*');
+                var calculationOperation = singleCharOperations['*'];
                 calculationHelper.OperationOrder.Enqueue(
                     new OperationPair(number,
-                                  weight,
-                                  calculationPair));
+                                  calculationOperation.Weight,
+                                  calculationOperation.CalculationPair));
             }
 
             calculationHelper.OperationOrder.Enqueue(new OperationParentheses(Parentheses.RIGHT));
@@ -529,7 +676,7 @@ namespace StringMathCalculator
         /// <exception cref="System.FormatException">
         /// Thrown when no character matches the character operation
         /// </exception>
-        private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
+        /*private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
         {
             switch(operation)
             {
@@ -551,7 +698,7 @@ namespace StringMathCalculator
                 default:
                     throw new FormatException();
             }
-        }
+        }*/
 
         private class CalculationHelper
         {

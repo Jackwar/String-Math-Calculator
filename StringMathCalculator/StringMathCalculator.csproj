@@ -16,14 +16,16 @@ Calculator calculator = new Calculator();
 Console.WriteLine(calculator.Calculation("3 + 7 / 6 - (6 * 4)").Calculate());</Description>
     <Product>String Math Calculator</Product>
     <PackageId>StringMathCalculator</PackageId>
-    <PackageReleaseNotes>Fixed times operation not being applied if a number was right of a parentheses. Fixed log not working if it was log of a parentheses.</PackageReleaseNotes>
-    <Version>0.2.0</Version>
+    <PackageReleaseNotes>Updated documentation.</PackageReleaseNotes>
+    <Version>0.2.1</Version>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Jackson Warburton</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/Jackwar/String-Math-Calculator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Jackwar/String-Math-Calculator</RepositoryUrl>
     <RepositoryType></RepositoryType>
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
 
   <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

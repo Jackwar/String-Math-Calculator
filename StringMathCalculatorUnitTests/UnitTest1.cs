@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StringMathCalculator;
+using System;
 
 namespace CalculatorUnitTests
 {
@@ -219,5 +220,170 @@ namespace CalculatorUnitTests
             Assert.AreEqual(product, 48);
         }
 
+        [TestMethod]
+        public void Custom_Operation()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => x + x + y + y, 0, 'f');
+
+            double product = calculator.Calculation("3 f 3").Calculate();
+
+            Assert.AreEqual(product, 12);
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Char()
+        {
+            Calculator calculator = new Calculator();
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, '+'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Added_Char()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => 0, 0, 'f');
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, 'f'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Word()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => x + x + y + y, 0, "Hello");
+
+            double product = calculator.Calculation("3 Hello 3").Calculate();
+
+            Assert.AreEqual(product, 12);
+            //Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, '+'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Word()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => 0, 0, "Hello");
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "Hello"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Words()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => 0, 0, "Hellos");
+            calculator.AddOperation((x, y) => 0, 0, "Hello");
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "Hello"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Word_Characters()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => x + x + y + y, 0, "Hello");
+            calculator.AddOperation((x, y) => 0, 0, (char)161);
+
+            double product = calculator.Calculation("3 Hello 3").Calculate();
+
+            Assert.AreEqual(product, 12);
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Existing_Word_Multiple_Characters()
+        {
+            Calculator calculator = new Calculator();
+            calculator.AddOperation((x, y) => x + x + y + y, 0, "Hello");
+            for (int i = 161; i < 290; i++)
+            {
+                calculator.AddOperation((x, y) => 0, 0, (char)i);
+            }
+            
+            double product = calculator.Calculation("3 Hello 3").Calculate();
+
+            Assert.AreEqual(product, 12);
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Reserved_Character_1()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, '('));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Reserved_Character_2()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, ')'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Reserved_Character_3()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, '.'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Space_In_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "word "));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Tab_In_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "   word"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_New_Line_In_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "\nword"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Carriage_Return_In_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "\rword"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Number_Character()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, '3'));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Number_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            Assert.ThrowsException<ArgumentException>(() => calculator.AddOperation((x, y) => 0, 0, "32354"));
+        }
+
+        [TestMethod]
+        public void Custom_Operation_Number_And_Word()
+        {
+            Calculator calculator = new Calculator();
+
+            calculator.AddOperation((x, y) => x + x + y + y, 0, "3hello3");
+
+            double product = calculator.Calculation("3 3hello3 3").Calculate();
+
+            Assert.AreEqual(12, product);
+        }
     }
 }
