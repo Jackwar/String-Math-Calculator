@@ -29,13 +29,13 @@ namespace StringMathCalculator
 
             singleCharOperations = new Dictionary<char, CalculatorOperation>()
             {
-                { '^', new CalculatorOperation(Exponent, 2 ) },
-                { '*', new CalculatorOperation(Times, 1) },
-                { '+', new CalculatorOperation(Add, 0) },
-                { '-', new CalculatorOperation(Minus, 0) },
-                { '/', new CalculatorOperation(Divide, 1) },
-                { 'r', new CalculatorOperation(Root, 2) },
-                { '_', new CalculatorOperation(Log, 2) }
+                { '^', new CalculatorOperation(Exponent, 1002 ) },
+                { '*', new CalculatorOperation(Times, 1001) },
+                { '+', new CalculatorOperation(Add, 1000) },
+                { '-', new CalculatorOperation(Minus, 1000) },
+                { '/', new CalculatorOperation(Divide, 1001) },
+                { 'r', new CalculatorOperation(Root, 1002) },
+                { '_', new CalculatorOperation(Log, 1002) }
             };
 
             foreach(var entry in singleCharOperations)
@@ -65,7 +65,7 @@ namespace StringMathCalculator
         /// <exception cref="ArgumentException">
         /// Throws when a reserved charcter of '(', ')' or '.' is used, if the character is already in use or the character is a number.
         /// </exception>
-        public void AddOperation(CalculationPair calculation, int weight, char character)
+        public void AddOperation(CalculationPair calculation, uint weight, char character)
         {
             if (int.TryParse(character.ToString(), out _))
             {
@@ -77,7 +77,7 @@ namespace StringMathCalculator
             }
             if (!singleCharOperations.ContainsKey(character))
             {
-                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, checked((int)weight)));
                 if (character != '\\')
                 {
                     legalCharacters.Append(character);
@@ -89,7 +89,7 @@ namespace StringMathCalculator
             }
             else if(WordReplacementsContains(character))
             {
-                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, checked((int)weight)));
             }
             else
             {
@@ -107,7 +107,7 @@ namespace StringMathCalculator
         /// <exception cref="ArgumentException">
         /// Throws if the word is already in use, has spaces or is just a number.
         /// </exception>
-        public void AddOperation(CalculationPair calculation, int weight, string word)
+        public void AddOperation(CalculationPair calculation, uint weight, string word)
         {
             if(int.TryParse(word, out _))
             {
@@ -120,7 +120,7 @@ namespace StringMathCalculator
             if (!wordReplacements.ContainsValue(word))
             {
                 var character = AddUnusedCharacter(word);
-                singleCharOperations.Add(character, new CalculatorOperation(calculation, weight));
+                singleCharOperations.Add(character, new CalculatorOperation(calculation, checked((int)weight)));
                 legalCharacters.Append(character);
             }
             else
@@ -664,41 +664,8 @@ namespace StringMathCalculator
 
             }
 
-            //Run the operations
             return originCalculator;
         }
-
-        /// <summary>
-        /// Return the operation Delegate and the weight for the character operation
-        /// </summary>
-        /// <param name="operation">Operation character</param>
-        /// <returns>Calculation pair and operation weight</returns>
-        /// <exception cref="System.FormatException">
-        /// Thrown when no character matches the character operation
-        /// </exception>
-        /*private (CalculationPair calculationPair, int weight) GetCalculationPairAndWeight(char operation)
-        {
-            switch(operation)
-            {
-                case '+':
-                    return (Add, 0);
-                case '-':
-                    return (Minus, 0);
-                case '/':
-                    return (Divide, 1);
-                case '*':
-                    return (Times, 1);
-                case '^':
-                    return (Exponent, 2);
-                case 'r':
-                    return (Root, 2);
-                //Log case
-                case '_':
-                    return (Log, 2);
-                default:
-                    throw new FormatException();
-            }
-        }*/
 
         private class CalculationHelper
         {
