@@ -66,7 +66,7 @@ Console.WriteLine(calculator.Calculation("2 (3 + 4)").Calculate());
 
 ## Custom Operations
 
-A custom operation can be added, it just needs to take in two doubles and output a double. Choose the weight of the operation and a character to tie the operation to. Existing operation characters cannot be reused, and the character cannot be a number. The character also cannot use the reserved characters '(', ')' or '.'.
+A custom operation can be added, it just needs to take in two doubles and output a double. Choose a positive number for the weight of the operation and a character to tie the operation to. Existing operation characters cannot be reused, and the character cannot be a number. The character also cannot use the reserved characters '(', ')' or '.'.
 ```
 calculator.AddOperation((x, y) => x + x + y + y, 3, 'f');
 Console.WriteLine(calculator.Calculation("2 f 2").Calculate());
@@ -80,4 +80,14 @@ Console.WriteLine(calculator.Calculation("1 addtwice 3").Calculate());
 
 ### Weight
 
-The weight of the operation will dictate which operation is calculated first. For example + has a weight of 0 while * has a weight of 1, meaning times will always be calculated before adding is considered. The highest weight is always calculated first unless parentheses are involved.
+The weight of the operation will dictate which operation is calculated first. For example + has a weight of 1000 while * has a weight of 1001, meaning times will always be calculated before adding is considered. The highest weight is always calculated first unless parentheses are involved. The most left operation is calculated first if weights are equal.
+
+#### Weights for existing operations
+
++ 1000
+- 1000
+/ 1001
+* 1001
+^ 1002
+r 1002
+log 1002
