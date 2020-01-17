@@ -27,6 +27,7 @@ namespace StringMathCalculator
             legalCharacters = new StringBuilder();
             legalCharacters.Append(@"[^0-9()");
 
+            //The weights used should never be negative, negative weights are reserved for parentheses.
             singleCharOperations = new Dictionary<char, CalculatorOperation>()
             {
                 { '^', new CalculatorOperation(Exponent, 1002 ) },
