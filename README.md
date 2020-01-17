@@ -63,3 +63,21 @@ The times operator can be omitted if a number is next to a parentheses
 Console.WriteLine(calculator.Calculation("(3 + 4) 2").Calculate());
 Console.WriteLine(calculator.Calculation("2 (3 + 4)").Calculate());
 ```
+
+## Custom Operations
+
+A custom operation can be added, it just needs to take in two doubles and output a double. Choose the weight of the operation and a character to tie the operation to. Existing operation characters cannot be reused, and the character cannot be a number. The character also cannot use the reserved characters '(', ')' or '.'.
+```
+calculator.AddOperation((x, y) => x + x + y + y, 3, 'f');
+Console.WriteLine(calculator.Calculation("2 f 2").Calculate());
+```
+
+A word can be tied to the custom operation instead of a charcter. The word cannot be just a number, but can contain numbers.
+```
+calculator.AddOperation((x, y) => x + x + y, 3, "addtwice");
+Console.WriteLine(calculator.Calculation("1 addtwice 3").Calculate());
+```
+
+### Weight
+
+The weight of the operation will dictate which operation is calculated first. For example + has a weight of 0 while * has a weight of 1, meaning times will always be calculated before adding is considered. The highest weight is always calculated first unless parentheses are involved.
