@@ -348,6 +348,14 @@ namespace StringMathCalculator
                     calculationHelper.NumberChar.Push('0');
                 }
                 calculationHelper.NumberChar.Push(calculations[i]);
+                //Push OperationNum if the first character in an expression is a decimal
+                if (i == 0)
+                {
+                    calculationHelper.OperationOrder.Enqueue(
+                        new OperationNum(
+                            double.Parse(new string(calculationHelper.NumberChar.ToArray()))));
+                    return;
+                }
                 calculationHelper.FirstDecimal = false;
             }
             else

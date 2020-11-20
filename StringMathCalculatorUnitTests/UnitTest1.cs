@@ -385,5 +385,15 @@ namespace CalculatorUnitTests
 
             Assert.AreEqual(12, product);
         }
+
+        [TestMethod]
+        public void Decimal_At_End()
+        {
+            Calculator calculator = new Calculator();
+
+            double product = calculator.Calculation(".3 + 3").Calculate();
+
+            Assert.AreEqual(3.3, product);
+        }
     }
 }

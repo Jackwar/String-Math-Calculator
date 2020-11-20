@@ -16,8 +16,8 @@ Calculator calculator = new Calculator();
 Console.WriteLine(calculator.Calculation("3 + 7 / 6 - (6 * 4)").Calculate());</Description>
     <Product>String Math Calculator</Product>
     <PackageId>StringMathCalculator</PackageId>
-    <PackageReleaseNotes>Added support for custom operations using two numbers.</PackageReleaseNotes>
-    <Version>0.3.0</Version>
+    <PackageReleaseNotes>Fixed decimal numbers (without a number on the left side of the decimal) at the beginning of an expression not being used in calculations.</PackageReleaseNotes>
+    <Version>0.3.2</Version>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Jackson Warburton</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
